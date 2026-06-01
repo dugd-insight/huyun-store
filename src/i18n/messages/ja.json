@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "title": "葫韵 HUYUN - 伝統的ひょうたん工芸",
+    "description": "千年の伝統を受け継ぎ、東洋の美学を現代の生活に"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "products": "作品",
+    "stories": "ストーリー",
+    "about": "について",
+    "contact": "お問い合わせ",
+    "cart": "カート",
+    "account": "アカウント",
+    "signIn": "ログイン",
+    "signOut": "ログアウト"
+  },
+  "home": {
+    "hero": {
+      "title": "葫韵",
+      "subtitle": "千年のひょうたん工芸を受け継ぎ、職人の心と知恵が込められた作品",
+      "ctaPrimary": "作品を見る",
+      "ctaSecondary": "工芸を知る"
+    },
+    "featured": {
+      "title": "おすすめ作品",
+      "subtitle": "丹精込めて作られた、一つ一つが芸術品",
+      "viewAll": "すべて見る"
+    },
+    "craftsmanship": {
+      "title": "伝統工芸、現代の解釈",
+      "description": "ひょうたんは中国文化で吉祥と幸福を象徴します。私たちの作品は、伝統工芸への深い理解と敬意から生まれています。",
+      "link": "工芸ストーリーをもっと見る"
+    },
+    "stories": {
+      "title": "工芸ストーリー",
+      "subtitle": "ひょうたん文化の奥深いストーリーを探索"
+    },
+    "newsletter": {
+      "title": "ニュースレター",
+      "description": "最新の作品情報と特別オファーを受け取る",
+      "placeholder": "メールアドレスを入力",
+      "button": "購読"
+    }
+  },
+  "products": {
+    "title": "すべての作品",
+    "subtitle": "丁寧に作り上げたひょうたん工芸コレクション",
+    "filters": {
+      "all": "すべて",
+      "categories": "カテゴリー"
+    },
+    "empty": "商品がありません",
+    "addToCart": "カートに追加",
+    "outOfStock": "売り切れ",
+    "price": "価格"
+  },
+  "cart": {
+    "title": "ショッピングカート",
+    "empty": "カートは空です",
+    "continueShopping": "買い物を続ける",
+    "checkout": "レジへ進む",
+    "total": "合計",
+    "remove": "削除"
+  },
+  "stories": {
+    "title": "工芸ストーリー",
+    "subtitle": "ひょうたん文化の奥深いストーリーと伝統工芸を探索",
+    "featured": "特集ストーリー",
+    "readMore": "続きを読む",
+    "moreStories": "その他のストーリー"
+  },
+  "footer": {
+    "shop": "ショップ",
+    "about": "について",
+    "support": "サポート",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約"
+  }
+}

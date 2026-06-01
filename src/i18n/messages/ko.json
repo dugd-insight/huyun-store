@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "title": "葫韵 HUYUN - 전통 박 공예",
+    "description": "천년의 전통을 이어 동양의 미학을 현대 생활에"
+  },
+  "navigation": {
+    "home": "홈",
+    "products": "작품",
+    "stories": "스토리",
+    "about": "소개",
+    "contact": "문의",
+    "cart": "장바구니",
+    "account": "계정",
+    "signIn": "로그인",
+    "signOut": "로그아웃"
+  },
+  "home": {
+    "hero": {
+      "title": "葫韵",
+      "subtitle": "천년의 박 공예를 이어, 장인의 마음과 지혜가 담긴 작품",
+      "ctaPrimary": "작품 보기",
+      "ctaSecondary": "공예 알아보기"
+    },
+    "featured": {
+      "title": "추천 작품",
+      "subtitle": "정성껏 만든 하나하나가 예술품",
+      "viewAll": "모두 보기"
+    },
+    "craftsmanship": {
+      "title": "전통 공예, 현대적 해석",
+      "description": "박은 중국 문화에서 길상과 행복을 상징합니다. 우리의 작품은 전통 공예에 대한 깊은 이해와 존중에서 태어났습니다.",
+      "link": "공예 스토리 더보기"
+    },
+    "stories": {
+      "title": "공예 스토리",
+      "subtitle": "박 문화의 깊은 스토리를 탐험"
+    },
+    "newsletter": {
+      "title": "뉴스레터",
+      "description": "최신 작품 소식과 특별 혜택을 받아보세요",
+      "placeholder": "이메일을 입력하세요",
+      "button": "구독"
+    }
+  },
+  "products": {
+    "title": "모든 작품",
+    "subtitle": "정성껏 만든 박 공예 컬렉션",
+    "filters": {
+      "all": "모두",
+      "categories": "카테고리"
+    },
+    "empty": "상품이 없습니다",
+    "addToCart": "장바구니에 담기",
+    "outOfStock": "품절",
+    "price": "가격"
+  },
+  "cart": {
+    "title": "장바구니",
+    "empty": "장바구니가 비어있습니다",
+    "continueShopping": "쇼핑 계속하기",
+    "checkout": "결제하기",
+    "total": "합계",
+    "remove": "삭제"
+  },
+  "stories": {
+    "title": "공예 스토리",
+    "subtitle": "박 문화의 깊은 스토리와 전통 공예 탐험",
+    "featured": "특집 스토리",
+    "readMore": "더 읽기",
+    "moreStories": "더 많은 스토리"
+  },
+  "footer": {
+    "shop": "쇼핑",
+    "about": "소개",
+    "support": "고객지원",
+    "privacy": "개인정보처리방침",
+    "terms": "이용약관"
+  }
+}

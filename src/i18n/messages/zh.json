@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "title": "葫韵 HUYUN - 传统葫芦工艺品",
+    "description": "传承千年葫芦工艺，将东方美学带入现代生活"
+  },
+  "navigation": {
+    "home": "首页",
+    "products": "作品",
+    "stories": "故事",
+    "about": "关于",
+    "contact": "联系",
+    "cart": "购物车",
+    "account": "账户",
+    "signIn": "登录",
+    "signOut": "退出"
+  },
+  "home": {
+    "hero": {
+      "title": "葫韵",
+      "subtitle": "传承千年葫芦工艺，每一件作品都承载着匠人的心血与智慧",
+      "ctaPrimary": "探索作品",
+      "ctaSecondary": "了解工艺"
+    },
+    "featured": {
+      "title": "精选作品",
+      "subtitle": "匠心独运，每一件都是艺术品",
+      "viewAll": "查看全部"
+    },
+    "craftsmanship": {
+      "title": "传统工艺，现代诠释",
+      "description": "葫芦在中国文化中承载着吉祥、福禄的美好寓意。我们的每一件作品都源自对传统工艺的深刻理解与尊重。",
+      "link": "了解更多工艺故事"
+    },
+    "stories": {
+      "title": "工艺故事",
+      "subtitle": "探索葫芦文化背后的精彩故事"
+    },
+    "newsletter": {
+      "title": "订阅我们",
+      "description": "获取最新作品资讯和独家优惠",
+      "placeholder": "输入您的邮箱",
+      "button": "订阅"
+    }
+  },
+  "products": {
+    "title": "全部作品",
+    "subtitle": "探索我们精心打造的葫芦工艺品系列",
+    "filters": {
+      "all": "全部",
+      "categories": "分类"
+    },
+    "empty": "暂无商品",
+    "addToCart": "加入购物车",
+    "outOfStock": "已售罄",
+    "price": "价格"
+  },
+  "cart": {
+    "title": "购物车",
+    "empty": "购物车是空的",
+    "continueShopping": "继续购物",
+    "checkout": "结算",
+    "total": "合计",
+    "remove": "移除"
+  },
+  "stories": {
+    "title": "工艺故事",
+    "subtitle": "探索葫芦文化背后的精彩故事与传统工艺",
+    "featured": "精选故事",
+    "readMore": "阅读全文",
+    "moreStories": "更多故事"
+  },
+  "footer": {
+    "shop": "商店",
+    "about": "关于",
+    "support": "帮助",
+    "privacy": "隐私政策",
+    "terms": "使用条款"
+  }
+}

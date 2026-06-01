@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "title": "HUYUN - Traditional Gourd Crafts",
+    "description": "Inheriting thousand-year-old gourd craftsmanship, bringing Eastern aesthetics into modern life"
+  },
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "stories": "Stories",
+    "about": "About",
+    "contact": "Contact",
+    "cart": "Cart",
+    "account": "Account",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "home": {
+    "hero": {
+      "title": "HUYUN",
+      "subtitle": "Inheriting thousand-year-old gourd craftsmanship, each piece carries the heart and wisdom of artisans",
+      "ctaPrimary": "Explore Products",
+      "ctaSecondary": "Learn Craft"
+    },
+    "featured": {
+      "title": "Featured Products",
+      "subtitle": "Crafted with care, each piece is a work of art",
+      "viewAll": "View All"
+    },
+    "craftsmanship": {
+      "title": "Traditional Craft, Modern Interpretation",
+      "description": "Gourds in Chinese culture carry auspicious meanings of good fortune. Each of our pieces stems from a deep understanding and respect for traditional craftsmanship.",
+      "link": "Learn more craft stories"
+    },
+    "stories": {
+      "title": "Craft Stories",
+      "subtitle": "Explore the fascinating stories behind gourd culture"
+    },
+    "newsletter": {
+      "title": "Subscribe",
+      "description": "Get the latest product updates and exclusive offers",
+      "placeholder": "Enter your email",
+      "button": "Subscribe"
+    }
+  },
+  "products": {
+    "title": "All Products",
+    "subtitle": "Explore our carefully crafted gourd craft collection",
+    "filters": {
+      "all": "All",
+      "categories": "Categories"
+    },
+    "empty": "No products available",
+    "addToCart": "Add to Cart",
+    "outOfStock": "Out of Stock",
+    "price": "Price"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "checkout": "Checkout",
+    "total": "Total",
+    "remove": "Remove"
+  },
+  "stories": {
+    "title": "Craft Stories",
+    "subtitle": "Explore the fascinating stories and traditional crafts behind gourd culture",
+    "featured": "Featured Story",
+    "readMore": "Read More",
+    "moreStories": "More Stories"
+  },
+  "footer": {
+    "shop": "Shop",
+    "about": "About",
+    "support": "Support",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
+  }
+}
