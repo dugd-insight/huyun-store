@@ -70,23 +70,27 @@ model Category {
 }
 
 model Product {
-  id            String        @id @default(cuid())
-  name          String
-  slug          String        @unique
-  description   String?
-  price         Decimal       @db.Decimal(10, 2)
-  originalPrice Decimal?      @db.Decimal(10, 2)
-  images        String[]
-  categoryId    String
-  stock         Int           @default(0)
-  status        ProductStatus @default(ACTIVE)
-  featured      Boolean       @default(false)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id                String        @id @default(cuid())
+  name              String
+  slug              String        @unique
+  description       String?
+  price             Decimal       @db.Decimal(10, 2)
+  originalPrice     Decimal?      @db.Decimal(10, 2)
+  images            String[]
+  categoryId        String
+  stock             Int           @default(0)
+  lowStockThreshold Int           @default(5)
+  lastRestocked     DateTime?
+  status            ProductStatus @default(ACTIVE)
+  featured          Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
-  category Category @relation(fields: [categoryId], references: [id])
-  cartItems CartItem[]
-  orderItems OrderItem[]
+  category     Category      @relation(fields: [categoryId], references: [id])
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
+  inventoryLogs InventoryLog[]
+  stockAlerts  StockAlert[]
 }
 
 model Cart {
@@ -128,11 +132,15 @@ model Order {
   total         Decimal       @db.Decimal(10, 2)
   status        OrderStatus   @default(PENDING)
   paymentStatus PaymentStatus @default(UNPAID)
+  trackingNumber String?
+  carrier       String?
+  shippedAt     DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  items OrderItem[]
+  user      User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items     OrderItem[]
+  shipments Shipment[]
 }
 
 model OrderItem {
@@ -160,6 +168,62 @@ model Story {
   updatedAt   DateTime  @updatedAt
 }
 
+// Inventory Management Models
+model InventoryLog {
+  id          String            @id @default(cuid())
+  productId   String
+  type        InventoryLogType
+  quantity    Int
+  beforeStock Int
+  afterStock  Int
+  reason      String?
+  orderId     String?
+  userId      String?
+  createdAt   DateTime          @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([createdAt])
+}
+
+model StockAlert {
+  id          String         @id @default(cuid())
+  productId   String
+  threshold   Int
+  isActive    Boolean        @default(true)
+  notifiedAt  DateTime?
+  resolvedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([isActive])
+}
+
+model Shipment {
+  id             String           @id @default(cuid())
+  orderId        String
+  trackingNumber String
+  carrier        String
+  status         ShipmentStatus   @default(PENDING)
+  origin         String?
+  destination    String?
+  estimatedDelivery DateTime?
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+  trackingData   Json?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([trackingNumber])
+}
+
 enum UserRole {
   USER
   ADMIN
@@ -183,4 +247,23 @@ enum PaymentStatus {
   UNPAID
   PAID
   REFUNDED
+}
+
+enum InventoryLogType {
+  STOCK_IN
+  STOCK_OUT
+  ADJUSTMENT
+  SALE
+  RETURN
+  RESTOCK
+}
+
+enum ShipmentStatus {
+  PENDING
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  EXCEPTION
+  RETURNED
 }

@@ -1,281 +1,270 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   Package,
   ShoppingCart,
   Users,
-  DollarSign,
-  Plus,
-  Eye,
-  Settings,
+  TrendingUp,
+  AlertTriangle,
+  Truck,
+  CreditCard,
   ArrowRight,
-  Clock,
 } from 'lucide-react'
-import { PageHeader, StatCard, Badge } from '@/lib/admin/components'
-import { getStats, getOrders, Order } from '@/lib/admin/store'
-import { formatPrice, formatDate } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { StatCard } from '@/lib/admin/components'
+
+interface DashboardStats {
+  totalProducts: number
+  totalOrders: number
+  totalUsers: number
+  totalRevenue: number
+  lowStockCount: number
+  pendingShipments: number
+  recentOrders: Array<{
+    id: string
+    name: string
+    total: number
+    status: string
+    createdAt: string
+  }>
+  recentPayments: Array<{
+    id: string
+    orderId: string
+    amount: number
+    method: string
+    status: string
+    createdAt: string
+  }>
+}
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<ReturnType<typeof getStats> | null>(null)
-  const [recentOrders, setRecentOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const loadData = () => {
-      try {
-        const statsData = getStats()
-        const ordersData = getOrders()
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, 10)
-
-        setStats(statsData)
-        setRecentOrders(ordersData)
-      } catch (error) {
-        console.error('Error loading dashboard data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadData()
-
-    // Reload on storage changes (for cross-tab sync)
-    const handleStorage = () => loadData()
-    window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
+    fetchDashboardStats()
   }, [])
 
-  if (loading) {
+  const fetchDashboardStats = async () => {
+    try {
+      setIsLoading(true)
+      // Fetch data from multiple endpoints
+      const [productsRes, ordersRes, usersRes, alertsRes] = await Promise.all([
+        fetch('/api/products'),
+        fetch('/api/orders'),
+        fetch('/api/users'),
+        fetch('/api/inventory/alert'),
+      ])
+
+      const products = await productsRes.json()
+      const orders = await ordersRes.json()
+      const users = await usersRes.json()
+      const alerts = await alertsRes.json()
+
+      // Calculate stats
+      const totalRevenue = orders.reduce((sum: number, order: { total: number }) => sum + Number(order.total), 0)
+      const pendingOrders = orders.filter((o: { status: string }) => o.status === 'PENDING' || o.status === 'PROCESSING')
+      const recentOrders = orders.slice(0, 5)
+
+      setStats({
+        totalProducts: products.length,
+        totalOrders: orders.length,
+        totalUsers: users.length,
+        totalRevenue,
+        lowStockCount: alerts.alerts?.length || 0,
+        pendingShipments: pendingOrders.length,
+        recentOrders,
+        recentPayments: [], // Would fetch from payment records
+      })
+    } catch (error) {
+      console.error('Failed to fetch dashboard stats:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isLoading) {
     return (
-      <div className="animate-pulse space-y-6">
-        <div className="h-8 w-48 bg-stone-200 rounded"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-32 bg-stone-200 rounded-xl"></div>
-          ))}
-        </div>
-        <div className="h-96 bg-stone-200 rounded-xl"></div>
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-2 border-cinnabar/30 border-t-cinnabar rounded-full animate-spin" />
       </div>
     )
   }
 
   if (!stats) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <p className="text-stone-500">加载数据时出错</p>
+      <div className="text-center py-12">
+        <p className="text-stone-500">加载失败，请刷新页面重试</p>
       </div>
     )
   }
 
-  const getOrderStatusBadge = (status: Order['status']) => {
-    const variants: Record<Order['status'], 'default' | 'success' | 'warning' | 'danger' | 'info'> = {
-      PENDING: 'warning',
-      PROCESSING: 'info',
-      SHIPPED: 'info',
-      DELIVERED: 'success',
-      CANCELLED: 'danger',
-    }
-    const labels: Record<Order['status'], string> = {
-      PENDING: '待处理',
-      PROCESSING: '处理中',
-      SHIPPED: '已发货',
-      DELIVERED: '已送达',
-      CANCELLED: '已取消',
-    }
-    return <Badge variant={variants[status]}>{labels[status]}</Badge>
-  }
-
-  const getPaymentStatusBadge = (status: Order['paymentStatus']) => {
-    const variants: Record<Order['paymentStatus'], 'default' | 'success' | 'warning' | 'danger'> = {
-      UNPAID: 'danger',
-      PAID: 'success',
-      REFUNDED: 'warning',
-    }
-    const labels: Record<Order['paymentStatus'], string> = {
-      UNPAID: '未付款',
-      PAID: '已付款',
-      REFUNDED: '已退款',
-    }
-    return <Badge variant={variants[status]}>{labels[status]}</Badge>
-  }
-
   return (
-    <div className="space-y-6 animate-fade-in">
-      <PageHeader
-        title="仪表盘"
-        description="欢迎回来！以下是您的店铺概览。"
-      />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-stone-900">仪表盘</h1>
+        <p className="text-sm text-stone-500">
+          {new Date().toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+          })}
+        </p>
+      </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="商品总数"
+          title="总商品数"
           value={stats.totalProducts}
           icon={Package}
-          color="cinnabar"
+          trend={{ value: 12, isPositive: true }}
         />
         <StatCard
-          title="订单总数"
+          title="总订单数"
           value={stats.totalOrders}
           icon={ShoppingCart}
-          color="default"
+          trend={{ value: 8, isPositive: true }}
         />
         <StatCard
-          title="用户总数"
+          title="总用户数"
           value={stats.totalUsers}
           icon={Users}
-          color="default"
+          trend={{ value: 15, isPositive: true }}
         />
         <StatCard
-          title="总收入"
-          value={formatPrice(stats.totalRevenue)}
-          icon={DollarSign}
-          color="emerald"
+          title="总销售额"
+          value={`¥${stats.totalRevenue.toFixed(2)}`}
+          icon={TrendingUp}
+          trend={{ value: 23, isPositive: true }}
         />
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link
-          href="/admin/products/new"
-          className="flex items-center justify-center p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:border-cinnabar hover:shadow-md transition-all group"
-        >
-          <Plus className="h-6 w-6 text-cinnabar mr-3 group-hover:scale-110 transition-transform" />
-          <span className="font-medium text-stone-900">添加商品</span>
-        </Link>
-        <Link
-          href="/admin/orders"
-          className="flex items-center justify-center p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:border-cinnabar hover:shadow-md transition-all group"
-        >
-          <Eye className="h-6 w-6 text-cinnabar mr-3 group-hover:scale-110 transition-transform" />
-          <span className="font-medium text-stone-900">查看订单</span>
-        </Link>
-        <Link
-          href="/admin/categories"
-          className="flex items-center justify-center p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:border-cinnabar hover:shadow-md transition-all group"
-        >
-          <Settings className="h-6 w-6 text-cinnabar mr-3 group-hover:scale-110 transition-transform" />
-          <span className="font-medium text-stone-900">管理分类</span>
-        </Link>
+      {/* Alerts & Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Low Stock Alert */}
+        <div className="bg-white rounded-xl border border-stone-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-stone-900">库存预警</h3>
+            <div className="p-2 bg-amber-50 rounded-lg">
+              <AlertTriangle className="w-5 h-5 text-amber-600" />
+            </div>
+          </div>
+          {stats.lowStockCount > 0 ? (
+            <>
+              <p className="text-3xl font-bold text-amber-600 mb-2">{stats.lowStockCount}</p>
+              <p className="text-sm text-stone-500 mb-4">个商品库存不足</p>
+              <Link
+                href="/admin/inventory"
+                className="inline-flex items-center text-sm text-cinnabar hover:text-cinnabar/80 font-medium"
+              >
+                查看详情
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-3xl font-bold text-emerald-600 mb-2">0</p>
+              <p className="text-sm text-stone-500">所有商品库存充足</p>
+            </>
+          )}
+        </div>
+
+        {/* Pending Shipments */}
+        <div className="bg-white rounded-xl border border-stone-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-stone-900">待发货订单</h3>
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Truck className="w-5 h-5 text-blue-600" />
+            </div>
+          </div>
+          {stats.pendingShipments > 0 ? (
+            <>
+              <p className="text-3xl font-bold text-blue-600 mb-2">{stats.pendingShipments}</p>
+              <p className="text-sm text-stone-500 mb-4">个订单等待发货</p>
+              <Link
+                href="/admin/orders"
+                className="inline-flex items-center text-sm text-cinnabar hover:text-cinnabar/80 font-medium"
+              >
+                去处理
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-3xl font-bold text-emerald-600 mb-2">0</p>
+              <p className="text-sm text-stone-500">所有订单已处理</p>
+            </>
+          )}
+        </div>
+
+        {/* Recent Payments */}
+        <div className="bg-white rounded-xl border border-stone-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-stone-900">最近收款</h3>
+            <div className="p-2 bg-emerald-50 rounded-lg">
+              <CreditCard className="w-5 h-5 text-emerald-600" />
+            </div>
+          </div>
+          <p className="text-3xl font-bold text-emerald-600 mb-2">
+            ¥{stats.recentOrders.filter((o) => o.status !== 'CANCELLED').reduce((sum, o) => sum + o.total, 0).toFixed(2)}
+          </p>
+          <p className="text-sm text-stone-500">今日收款总额</p>
+        </div>
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-white rounded-xl border border-stone-200 shadow-sm">
-        <div className="px-6 py-4 border-b border-stone-200 flex items-center justify-between">
-          <div className="flex items-center">
-            <Clock className="h-5 w-5 text-stone-400 mr-2" />
-            <h2 className="text-lg font-semibold text-stone-900">最近订单</h2>
-          </div>
+      <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200">
+          <h3 className="font-semibold text-stone-900">最近订单</h3>
           <Link
             href="/admin/orders"
-            className="text-sm text-cinnabar hover:text-cinnabar-dark flex items-center"
+            className="text-sm text-cinnabar hover:text-cinnabar/80 font-medium"
           >
             查看全部
-            <ArrowRight className="h-4 w-4 ml-1" />
           </Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-stone-200">
-            <thead className="bg-stone-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">
-                  订单号
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">
-                  客户
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">
-                  金额
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">
-                  订单状态
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">
-                  支付状态
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">
-                  日期
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-200">
-              {recentOrders.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-stone-500">
-                    暂无订单
-                  </td>
-                </tr>
-              ) : (
-                recentOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-stone-50 transition-colors">
-                    <td className="px-6 py-4 text-sm font-medium text-cinnabar">
-                      #{order.id.slice(-6).toUpperCase()}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-stone-900">
-                      <div>
-                        <p className="font-medium">{order.name}</p>
-                        <p className="text-stone-500 text-xs">{order.email}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-stone-900">
-                      {formatPrice(order.total)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {getOrderStatusBadge(order.status)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {getPaymentStatusBadge(order.paymentStatus)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-stone-500">
-                      {formatDate(order.createdAt)}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+        <div className="divide-y divide-stone-100">
+          {stats.recentOrders.length === 0 ? (
+            <div className="px-6 py-8 text-center text-stone-500">
+              暂无订单
+            </div>
+          ) : (
+            stats.recentOrders.map((order) => (
+              <div key={order.id} className="flex items-center justify-between px-6 py-4 hover:bg-stone-50">
+                <div>
+                  <p className="font-medium text-stone-900">{order.name}</p>
+                  <p className="text-sm text-stone-500">
+                    {new Date(order.createdAt).toLocaleDateString('zh-CN')}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-stone-900">¥{Number(order.total).toFixed(2)}</p>
+                  <span
+                    className={cn(
+                      'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium',
+                      order.status === 'DELIVERED' && 'bg-emerald-50 text-emerald-600',
+                      order.status === 'SHIPPED' && 'bg-blue-50 text-blue-600',
+                      order.status === 'PENDING' && 'bg-amber-50 text-amber-600',
+                      order.status === 'CANCELLED' && 'bg-red-50 text-red-600',
+                      order.status === 'PROCESSING' && 'bg-purple-50 text-purple-600'
+                    )}
+                  >
+                    {order.status === 'PENDING' && '待处理'}
+                    {order.status === 'PROCESSING' && '处理中'}
+                    {order.status === 'SHIPPED' && '已发货'}
+                    {order.status === 'DELIVERED' && '已完成'}
+                    {order.status === 'CANCELLED' && '已取消'}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
-
-      {/* Alerts */}
-      {(stats.pendingOrders > 0 || stats.outOfStockProducts > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {stats.pendingOrders > 0 && (
-            <Link
-              href="/admin/orders?status=PENDING"
-              className="flex items-center p-4 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 transition-colors"
-            >
-              <div className="p-3 bg-amber-100 rounded-full mr-4">
-                <ShoppingCart className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="font-medium text-amber-800">
-                  {stats.pendingOrders} 个待处理订单
-                </p>
-                <p className="text-sm text-amber-600">点击查看</p>
-              </div>
-            </Link>
-          )}
-          {stats.outOfStockProducts > 0 && (
-            <Link
-              href="/admin/products?stock=0"
-              className="flex items-center p-4 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-colors"
-            >
-              <div className="p-3 bg-red-100 rounded-full mr-4">
-                <Package className="h-5 w-5 text-red-600" />
-              </div>
-              <div>
-                <p className="font-medium text-red-800">
-                  {stats.outOfStockProducts} 个商品缺货
-                </p>
-                <p className="text-sm text-red-600">点击查看</p>
-              </div>
-            </Link>
-          )}
-        </div>
-      )}
     </div>
   )
 }

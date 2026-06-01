@@ -27,6 +27,7 @@ const navigation = [
   { name: '仪表盘', href: '/admin', icon: LayoutDashboard },
   { name: '商品管理', href: '/admin/products', icon: Package },
   { name: '分类管理', href: '/admin/categories', icon: Layers },
+  { name: '库存管理', href: '/admin/inventory', icon: BarChart3, badge: 'lowStock' },
   { name: '故事管理', href: '/admin/stories', icon: FileText },
   { name: '订单管理', href: '/admin/orders', icon: ShoppingCart },
   { name: '用户管理', href: '/admin/users', icon: Users },
@@ -60,11 +61,32 @@ interface AdminLayoutProps {
 export function AdminLayout({ children }: AdminLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [lowStockCount, setLowStockCount] = useState(0)
   const pathname = usePathname()
 
   // Initialize mock data on mount
   useEffect(() => {
     initializeMockData()
+  }, [])
+
+  // Fetch low stock count
+  useEffect(() => {
+    const fetchLowStockCount = async () => {
+      try {
+        const response = await fetch('/api/inventory/alert')
+        if (response.ok) {
+          const data = await response.json()
+          setLowStockCount(data.alerts?.length || 0)
+        }
+      } catch (error) {
+        console.error('Failed to fetch low stock count:', error)
+      }
+    }
+
+    fetchLowStockCount()
+    // Refresh every 5 minutes
+    const interval = setInterval(fetchLowStockCount, 5 * 60 * 1000)
+    return () => clearInterval(interval)
   }, [])
 
   // Close mobile menu on route change
@@ -126,6 +148,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
+              const showBadge = item.badge === 'lowStock' && lowStockCount > 0
               return (
                 <Link
                   key={item.name}
@@ -140,7 +163,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   title={isCollapsed ? item.name : undefined}
                 >
                   <item.icon className="h-5 w-5 flex-shrink-0" />
-                  {!isCollapsed && <span className="ml-3 text-sm">{item.name}</span>}
+                  {!isCollapsed && (
+                    <>
+                      <span className="ml-3 text-sm flex-1">{item.name}</span>
+                      {showBadge && (
+                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                          {lowStockCount}
+                        </span>
+                      )}
+                    </>
+                  )}
+                  {isCollapsed && showBadge && (
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                  )}
                 </Link>
               )
             })}
