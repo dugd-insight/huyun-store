@@ -94,7 +94,7 @@ export async function adjustStock(params: StockAdjustmentParams): Promise<{
       const log = await tx.inventoryLog.create({
         data: {
           productId,
-          type,
+          type: type as InventoryLogType,
           quantity,
           beforeStock,
           afterStock,
@@ -250,7 +250,7 @@ export async function getInventoryLogs(
     const where: Prisma.InventoryLogWhereInput = { productId }
 
     if (types && types.length > 0) {
-      where.type = { in: types }
+      where.type = { in: types as InventoryLogType[] }
     }
 
     if (startDate || endDate) {

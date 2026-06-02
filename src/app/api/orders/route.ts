@@ -197,7 +197,7 @@ export async function PATCH(request: NextRequest) {
     // Handle stock operations based on status change
     if (status === 'CANCELLED' && order.paymentStatus !== 'REFUNDED') {
       // Restore stock for cancelled orders
-      const items = order.items.map((item) => ({
+      const items = order.items.map((item: { productId: string; quantity: number }) => ({
         productId: item.productId,
         quantity: item.quantity,
       }))
