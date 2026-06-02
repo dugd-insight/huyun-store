@@ -1,114 +1,84 @@
-'use client'
+import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
+import ProductsFilterClient from '@/components/product/ProductsFilterClient'
 
-import { useState } from 'react'
-import Image from 'next/image'
-import { Search } from 'lucide-react'
-import { ProductCard } from '@/components/product/ProductCard'
+/* ===========================
+   产品列表页 - 服务端组件
+   使用 URL search params 支持分类筛选和搜索
+   =========================== */
 
-const allProducts = [
-  { id: '1', name: '传统烙画山水葫芦', slug: 'traditional-pyrography-landscape', image: '/images/product-1.jpg', category: '烙画葫芦', price: 1280, originalPrice: 1580, badge: '新品' as const },
-  { id: '2', name: '精雕双龙戏珠葫芦瓶', slug: 'carved-dragon-gourd-vase', image: '/images/product-2.jpg', category: '雕刻葫芦', price: 2680, originalPrice: null, badge: '精品' as const },
-  { id: '3', name: '彩绘福禄寿葫芦', slug: 'painted-fortune-gourd', image: '/images/product-3.jpg', category: '彩绘葫芦', price: 880, originalPrice: 1080, badge: '特惠' as const },
-  { id: '4', name: '天然素面大葫芦', slug: 'natural-large-gourd', image: '/images/product-4.jpg', category: '素葫芦', price: 580, originalPrice: null, badge: undefined },
-  { id: '5', name: '镂空雕花葫芦灯', slug: 'hollow-carved-gourd-lamp', image: '/images/product-5.jpg', category: '雕刻葫芦', price: 2180, originalPrice: 2680, badge: '特惠' as const },
-  { id: '6', name: '烙画百鸟朝凤葫芦', slug: 'pyrography-birds-gourd', image: '/images/product-6.jpg', category: '烙画葫芦', price: 1880, originalPrice: null, badge: '精品' as const },
-  { id: '7', name: '彩绘牡丹富贵葫芦', slug: 'painted-peony-gourd', image: '/images/product-7.jpg', category: '彩绘葫芦', price: 980, originalPrice: null, badge: '新品' as const },
-  { id: '8', name: '葫芦茶具套装', slug: 'gourd-teaset-collection', image: '/images/product-8.jpg', category: '葫芦茶具', price: 1680, originalPrice: 1980, badge: '新品' as const },
-]
+interface ProductsPageProps {
+  searchParams: Promise<{ category?: string; search?: string }>
+}
 
-const categoryFilters = [
-  { name: '全部', value: '' },
-  { name: '烙画葫芦', value: '烙画葫芦' },
-  { name: '雕刻葫芦', value: '雕刻葫芦' },
-  { name: '彩绘葫芦', value: '彩绘葫芦' },
-  { name: '素葫芦', value: '素葫芦' },
-  { name: '葫芦茶具', value: '葫芦茶具' },
-]
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const { category, search } = await searchParams
 
-export default function ProductsPage() {
-  const [selectedCategory, setSelectedCategory] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
+  // 构建查询条件
+  const where: Prisma.ProductWhereInput = {
+    status: 'ACTIVE',
+  }
 
-  const filteredProducts = allProducts.filter((product) => {
-    const matchesCategory = !selectedCategory || product.category === selectedCategory
-    const matchesSearch = !searchQuery || product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch
+  if (category) {
+    where.category = { slug: category }
+  }
+
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: 'insensitive' } },
+      { description: { contains: search, mode: 'insensitive' } },
+    ]
+  }
+
+  // 获取产品列表
+  const dbProducts = await prisma.product.findMany({
+    where,
+    include: { category: true },
+    orderBy: { createdAt: 'desc' },
   })
 
+  // 获取所有分类用于筛选栏
+  const dbCategories = await prisma.category.findMany({
+    orderBy: { name: 'asc' },
+  })
+
+  // 映射数据库产品到 UI 组件所需格式
+  const products = dbProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    image: p.images[0] || '/images/product-placeholder.jpg',
+    category: p.category.name,
+    price: Number(p.price),
+    originalPrice: p.originalPrice ? Number(p.originalPrice) : null,
+    badge: deriveProductBadge(p.name),
+  }))
+
+  // 构建分类筛选器
+  const categoryFilters = [
+    { name: '全部', value: '' },
+    ...dbCategories.map((cat) => ({
+      name: cat.name,
+      value: cat.name,
+    })),
+  ]
+
   return (
-    <div style={{ background: 'var(--color-rice)' }}>
-      {/* Page Header */}
-      <div className="py-12 md:py-16 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--color-parchment)' }}>
-        <div className="max-w-[1280px] mx-auto text-center">
-          <h1 className="font-serif text-3xl md:text-4xl font-semibold text-[var(--color-ink)] mb-3">
-            全部作品
-          </h1>
-          <p className="text-sm text-[var(--color-ink)] opacity-60 max-w-lg mx-auto">
-            探索我们精心打造的葫芦工艺品系列，每一件都承载着匠人的心血
-          </p>
-        </div>
-      </div>
-
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filter Bar */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          {/* Search */}
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-ink)] opacity-40" />
-            <input
-              type="text"
-              placeholder="搜索作品..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-sm border border-[var(--color-cloud)] bg-white text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-cinnabar)] transition-colors"
-            />
-          </div>
-
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-2">
-            {categoryFilters.map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => setSelectedCategory(filter.value)}
-                className={`px-4 py-2 text-sm tracking-wider transition-all ${
-                  selectedCategory === filter.value
-                    ? 'bg-[var(--color-cinnabar)] text-white'
-                    : 'bg-white text-[var(--color-ink)] border border-[var(--color-cloud)] hover:border-[var(--color-cinnabar)] hover:text-[var(--color-cinnabar)]'
-                }`}
-              >
-                {filter.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Results Count */}
-        <p className="text-xs text-[var(--color-ink)] opacity-50 mb-6">
-          共 {filteredProducts.length} 件作品
-        </p>
-
-        {/* Products Grid */}
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-[var(--color-ink)] opacity-50 mb-4">未找到匹配的作品</p>
-            <button
-              onClick={() => {
-                setSelectedCategory('')
-                setSearchQuery('')
-              }}
-              className="text-sm text-[var(--color-cinnabar)] hover:text-[var(--color-cinnabar-dark)] transition-colors"
-            >
-              清除筛选条件
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+    <ProductsFilterClient
+      products={products}
+      categoryFilters={categoryFilters}
+      initialCategory={category || ''}
+      initialSearch={search || ''}
+    />
   )
+}
+
+/**
+ * 根据产品名称推断 badge 类型。
+ */
+function deriveProductBadge(name: string): '新品' | '精品' | '特惠' | undefined {
+  if (name.includes('新品')) return '新品'
+  if (name.includes('精品')) return '精品'
+  if (name.includes('特惠') || name.includes('特价') || name.includes('优惠')) return '特惠'
+  return undefined
 }

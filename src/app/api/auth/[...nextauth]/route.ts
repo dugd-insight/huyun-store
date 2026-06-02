@@ -5,7 +5,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
-const handler = NextAuth({
+export const authOptions = {
   adapter: PrismaAdapter(prisma) as any,
   providers: [
     GoogleProvider({
@@ -72,6 +72,8 @@ const handler = NextAuth({
   pages: {
     signIn: '/auth/signin',
   },
-})
+}
+
+const handler = NextAuth(authOptions as any)
 
 export { handler as GET, handler as POST }

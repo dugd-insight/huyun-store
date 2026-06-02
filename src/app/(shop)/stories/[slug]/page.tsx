@@ -1,8 +1,15 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import DOMPurify from 'isomorphic-dompurify'
+
+/* ===========================
+   故事详情页 - 服务端组件
+   使用 DOMPurify 净化 HTML 内容，防止 XSS 攻击
+   =========================== */
 
 async function getStory(slug: string) {
   return prisma.story.findUnique({
@@ -21,6 +28,9 @@ export default async function StoryPage({ params }: StoryPageProps) {
   if (!story) {
     notFound()
   }
+
+  // 使用 DOMPurify 净化 HTML 内容，防止 XSS 攻击
+  const sanitizedContent = DOMPurify.sanitize(story.content)
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -41,10 +51,13 @@ export default async function StoryPage({ params }: StoryPageProps) {
       <div className="bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {story.image && (
-            <div className="relative aspect-[21/9] mb-8 bg-stone-100">
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${story.image})` }}
+            <div className="relative aspect-[21/9] mb-8 bg-stone-100 overflow-hidden">
+              <Image
+                src={story.image}
+                alt={story.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 896px"
               />
             </div>
           )}
@@ -67,7 +80,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <article className="prose prose-stone prose-lg max-w-none">
           <div
-            dangerouslySetInnerHTML={{ __html: story.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             className="text-stone-700 leading-relaxed"
           />
         </article>

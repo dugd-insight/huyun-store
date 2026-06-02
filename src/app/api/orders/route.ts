@@ -48,6 +48,15 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * 创建订单 - 使用事务保护
+ *
+ * 将以下步骤封装在单个数据库事务中，确保数据一致性：
+ * 1. 验证每个商品的库存
+ * 2. 验证商品存在并计算总价
+ * 3. 创建订单及订单项
+ * 4. 记录库存扣减日志
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -72,7 +81,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate stock for all items
+    // Pre-transaction stock validation (early exit for insufficient stock)
     for (const item of items) {
       const stockCheck = await validateStock(item.productId, item.quantity)
       if (!stockCheck.available) {
@@ -83,69 +92,123 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Calculate total
-    let total = 0
-    const orderItems = []
+    // Use a transaction to ensure atomicity of order creation and stock management
+    const order = await prisma.$transaction(async (tx) => {
+      // 1. Verify products and calculate total inside transaction
+      let total = 0
+      const orderItems: Array<{
+        productId: string
+        name: string
+        price: any
+        quantity: number
+      }> = []
 
-    for (const item of items) {
-      const product = await prisma.product.findUnique({
-        where: { id: item.productId },
-      })
+      for (const item of items) {
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            stock: true,
+            status: true,
+          },
+        })
 
-      if (!product) {
-        return NextResponse.json(
-          { error: `Product ${item.productId} not found` },
-          { status: 404 }
-        )
+        if (!product) {
+          throw new Error(`Product ${item.productId} not found`)
+        }
+
+        // Verify stock availability within the transaction
+        if (product.status !== 'ACTIVE' || product.stock < item.quantity) {
+          throw new Error(`Insufficient stock for product ${product.name}`)
+        }
+
+        total += Number(product.price) * item.quantity
+
+        orderItems.push({
+          productId: item.productId,
+          name: product.name,
+          price: product.price,
+          quantity: item.quantity,
+        })
       }
 
-      total += Number(product.price) * item.quantity
-
-      orderItems.push({
-        productId: item.productId,
-        name: product.name,
-        price: product.price,
-        quantity: item.quantity,
-      })
-    }
-
-    // Create order
-    const order = await prisma.order.create({
-      data: {
-        email,
-        name,
-        phone,
-        address,
-        city,
-        postalCode: postalCode || '',
-        country: country || 'CN',
-        total,
-        status: 'PENDING',
-        paymentStatus: 'UNPAID',
-        userId,
-        items: {
-          create: orderItems,
+      // 2. Create order and order items
+      const createdOrder = await tx.order.create({
+        data: {
+          email,
+          name,
+          phone,
+          address,
+          city,
+          postalCode: postalCode || '',
+          country: country || 'CN',
+          total,
+          status: 'PENDING',
+          paymentStatus: 'UNPAID',
+          userId,
+          items: {
+            create: orderItems,
+          },
         },
-      },
-      include: {
-        items: {
-          include: {
-            product: {
-              select: {
-                id: true,
-                name: true,
-                images: true,
+        include: {
+          items: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  images: true,
+                },
               },
             },
           },
         },
-      },
+      })
+
+      // 3. Record inventory logs for stock deduction
+      for (const item of orderItems) {
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: { stock: true },
+        })
+
+        if (!product) continue
+
+        const beforeStock = product.stock
+        const afterStock = beforeStock - item.quantity
+
+        // Update product stock
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: afterStock,
+            status: afterStock === 0 ? 'OUT_OF_STOCK' : 'ACTIVE',
+          },
+        })
+
+        // Create inventory log
+        await tx.inventoryLog.create({
+          data: {
+            productId: item.productId,
+            type: 'SALE',
+            quantity: item.quantity,
+            beforeStock,
+            afterStock,
+            reason: `Order ${createdOrder.id}`,
+            orderId: createdOrder.id,
+          },
+        })
+      }
+
+      return createdOrder
     })
 
-    // Create payment
+    // Create payment (outside transaction as it's an external service call)
     const paymentResult = await createPayment(paymentMethod as PaymentMethod, {
       orderId: order.id,
-      amount: total,
+      amount: Number(order.total),
       currency: 'CNY',
       description: `Order ${order.id}`,
       metadata: {
@@ -160,6 +223,15 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
   } catch (error) {
     console.error('Error creating order:', error)
+
+    // Handle transaction-specific errors
+    if (error instanceof Error && error.message.includes('Insufficient stock')) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      )
+    }
+
     return NextResponse.json(
       { error: 'Failed to create order' },
       { status: 500 }
