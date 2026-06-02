@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getInventoryLogs } from '@/lib/inventory/service'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
-import { InventoryLogType } from '@prisma/client'
+
+// Valid inventory log types (matching Prisma enum)
+type InventoryLogType = 'STOCK_IN' | 'STOCK_OUT' | 'ADJUSTMENT' | 'SALE' | 'RETURN' | 'RESTOCK'
 
 // Get inventory logs
 export async function GET(request: NextRequest) {
