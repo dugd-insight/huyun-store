@@ -1,306 +1,448 @@
-import { ProductCard } from '@/components/product/ProductCard'
-import { StoryCard } from '@/components/ui/StoryCard'
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import { HeroCarousel } from '@/components/ui/HeroCarousel'
+import { ProductCard } from '@/components/product/ProductCard'
+import { StoryModal } from '@/components/ui/StoryModal'
 
-// 静态示例数据，用于构建时
-const sampleProducts = [
+/* ===========================
+   Data
+   =========================== */
+
+const heroSlides = [
+  {
+    image: '/images/hero-main.jpg',
+    badge: '千年传承 匠心独运',
+    title: '葫韵 · 传统葫芦工艺',
+    subtitle: '传承千年葫芦工艺，每一件作品都承载着匠人的心血与智慧，将东方美学融入现代生活。',
+    cta: '探索作品',
+    ctaLink: '/products',
+  },
+  {
+    image: '/images/hero-carousel-1.jpg',
+    badge: '手工烙画 独一无二',
+    title: '烙画葫芦',
+    subtitle: '以火为墨，以葫芦为纸，千年烙画技艺在葫芦上绽放出独特的艺术魅力。',
+    cta: '了解更多',
+    ctaLink: '/products?category=pyrography',
+  },
+  {
+    image: '/images/hero-carousel-2.jpg',
+    badge: '精雕细琢 巧夺天工',
+    title: '雕刻葫芦',
+    subtitle: '每一刀都蕴含着匠人的功力与审美，雕刻葫芦将传统技艺推向极致。',
+    cta: '浏览精品',
+    ctaLink: '/products?category=carved',
+  },
+  {
+    image: '/images/hero-carousel-3.jpg',
+    badge: '彩绘生辉 寓意吉祥',
+    title: '彩绘葫芦',
+    subtitle: '色彩斑斓的彩绘葫芦，承载着福禄双全的美好祝愿，是送礼佳品。',
+    cta: '查看详情',
+    ctaLink: '/products?category=painted',
+  },
+]
+
+const categories = [
+  { name: '烙画葫芦', desc: '以火为墨，千年技艺', image: '/images/category-pyrography.jpg', href: '/products?category=pyrography' },
+  { name: '雕刻葫芦', desc: '精雕细琢，巧夺天工', image: '/images/category-carved.jpg', href: '/products?category=carved' },
+  { name: '彩绘葫芦', desc: '彩绘生辉，寓意吉祥', image: '/images/category-painted.jpg', href: '/products?category=painted' },
+  { name: '素葫芦', desc: '天然本色，返璞归真', image: '/images/category-natural.jpg', href: '/products?category=natural' },
+  { name: '葫芦茶具', desc: '茶韵悠长，壶中天地', image: '/images/category-teaset.jpg', href: '/products?category=teaset' },
+]
+
+const products = [
+  { id: '1', name: '传统烙画山水葫芦', slug: 'traditional-pyrography-landscape', image: '/images/product-1.jpg', category: '烙画葫芦', price: 1280, originalPrice: 1580, badge: '新品' as const },
+  { id: '2', name: '精雕双龙戏珠葫芦瓶', slug: 'carved-dragon-gourd-vase', image: '/images/product-2.jpg', category: '雕刻葫芦', price: 2680, originalPrice: null, badge: '精品' as const },
+  { id: '3', name: '彩绘福禄寿葫芦', slug: 'painted-fortune-gourd', image: '/images/product-3.jpg', category: '彩绘葫芦', price: 880, originalPrice: 1080, badge: '特惠' as const },
+  { id: '4', name: '天然素面大葫芦', slug: 'natural-large-gourd', image: '/images/product-4.jpg', category: '素葫芦', price: 580, originalPrice: null, badge: undefined },
+  { id: '5', name: '镂空雕花葫芦灯', slug: 'hollow-carved-gourd-lamp', image: '/images/product-5.jpg', category: '雕刻葫芦', price: 2180, originalPrice: 2680, badge: '特惠' as const },
+  { id: '6', name: '烙画百鸟朝凤葫芦', slug: 'pyrography-birds-gourd', image: '/images/product-6.jpg', category: '烙画葫芦', price: 1880, originalPrice: null, badge: '精品' as const },
+  { id: '7', name: '彩绘牡丹富贵葫芦', slug: 'painted-peony-gourd', image: '/images/product-7.jpg', category: '彩绘葫芦', price: 980, originalPrice: null, badge: '新品' as const },
+  { id: '8', name: '葫芦茶具套装', slug: 'gourd-teaset-collection', image: '/images/product-8.jpg', category: '葫芦茶具', price: 1680, originalPrice: 1980, badge: '新品' as const },
+]
+
+const stories = [
   {
     id: '1',
-    name: '传统雕刻葫芦瓶',
-    slug: 'traditional-carved-gourd-vase',
-    description: '精美的传统雕刻葫芦瓶，采用百年传承技艺手工制作。',
-    price: 1280,
-    originalPrice: 1580,
-    images: ['https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=2070&auto=format&fit=crop'],
-    categoryId: '1',
-    stock: 5,
-    status: 'ACTIVE' as const,
-    featured: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    category: {
-      id: '1',
-      name: '雕刻葫芦',
-      slug: 'carved-gourd',
-      description: null,
-      image: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
+    title: '熊猫酒葫芦',
+    image: '/images/story-panda-wine-gourd.jpg',
+    excerpt: '国宝熊猫与葫芦酒器的奇妙结合，展现中华文化的独特魅力。',
+    content: '<p>在中国传统文化中，葫芦一直被视为吉祥的象征。而熊猫作为国宝，更是中华文化的代表。当这两种元素巧妙结合，便诞生了独特的熊猫酒葫芦。</p><p>熊猫酒葫芦以精选天然葫芦为载体，经过匠人的精心设计和雕刻，将憨态可掬的熊猫形象栩栩如生地呈现在葫芦之上。每一个细节都经过反复推敲，力求完美。</p><p>这种独特的工艺品不仅具有实用价值，更是一件值得收藏的艺术品。它承载着匠人对传统文化的理解与创新，展现了中华工艺的博大精深。</p>',
+    author: '葫韵工作室',
   },
   {
     id: '2',
-    name: '彩绘福禄葫芦',
-    slug: 'painted-fortune-gourd',
-    description: '寓意福禄双全的彩绘葫芦，色彩鲜艳，工艺精湛。',
-    price: 880,
-    originalPrice: null,
-    images: ['https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=80&w=2449&auto=format&fit=crop'],
-    categoryId: '2',
-    stock: 8,
-    status: 'ACTIVE' as const,
-    featured: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    category: {
-      id: '2',
-      name: '彩绘葫芦',
-      slug: 'painted-gourd',
-      description: null,
-      image: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
+    title: '诗仙李白',
+    image: '/images/story-li-bai.jpg',
+    excerpt: '诗仙李白与葫芦的千年情缘，酒中仙人的浪漫传说。',
+    content: '<p>李白，字太白，号青莲居士，被誉为"诗仙"。他一生嗜酒如命，而葫芦便是他最钟爱的酒器。</p><p>据传，李白常常腰挂葫芦，骑驴漫游天下。每至一处，便取葫芦饮酒，酒兴大发时便挥毫泼墨，留下千古名篇。葫芦之于李白，不仅是酒器，更是他自由不羁精神的象征。</p><p>在我们的葫芦工艺品中，匠人们以精湛的烙画技艺，将李白醉酒吟诗的场景刻画在葫芦之上，让千年前的浪漫在葫芦上重现。</p>',
+    author: '葫韵工作室',
   },
   {
     id: '3',
-    name: '烫画山水葫芦',
-    slug: 'pyrography-landscape-gourd',
-    description: '采用传统烫画技艺，将山水意境完美呈现于葫芦之上。',
-    price: 1680,
-    originalPrice: null,
-    images: ['https://images.unsplash.com/photo-1513519245088-0e12902e35ca?q=80&w=2070&auto=format&fit=crop'],
-    categoryId: '3',
-    stock: 3,
-    status: 'ACTIVE' as const,
-    featured: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    category: {
-      id: '3',
-      name: '烫画葫芦',
-      slug: 'pyrography-gourd',
-      description: null,
-      image: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
+    title: '武松打虎',
+    image: '/images/story-wu-song.jpg',
+    excerpt: '水浒英雄武松的经典故事，在葫芦上演绎传奇。',
+    content: '<p>《水浒传》中武松打虎的故事家喻户晓。武松在景阳冈上赤手空拳打死猛虎的壮举，展现了中华民族勇武不屈的精神。</p><p>匠人们以雕刻和彩绘相结合的技法，将武松打虎的精彩瞬间凝固在葫芦之上。武松的英姿、猛虎的凶猛，都在方寸之间得到了完美的呈现。</p><p>这件作品不仅是对经典文学作品的致敬，更是对中华传统工艺的一次精彩演绎。</p>',
+    author: '葫韵工作室',
   },
   {
     id: '4',
-    name: '镂空雕花葫芦灯',
-    slug: 'hollow-carved-gourd-lamp',
-    description: '精美的镂空雕花葫芦灯，光影交错，美轮美奂。',
-    price: 2180,
-    originalPrice: 2680,
-    images: ['https://images.unsplash.com/photo-1544967082-d9d25d867d66?q=80&w=2070&auto=format&fit=crop'],
-    categoryId: '1',
-    stock: 2,
-    status: 'ACTIVE' as const,
-    featured: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    category: {
-      id: '1',
-      name: '雕刻葫芦',
-      slug: 'carved-gourd',
-      description: null,
-      image: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
+    title: '八仙传说',
+    image: '/images/story-eight-immortals.jpg',
+    excerpt: '八仙过海各显神通，葫芦承载着仙人的法力与智慧。',
+    content: '<p>八仙是中国神话传说中的八位仙人，他们各自拥有独特的法器和神通。其中，铁拐李的葫芦尤为著名——这个看似普通的葫芦，却蕴含着无穷的法力。</p><p>传说铁拐李的葫芦中装有灵丹妙药，能治百病、起死回生。在民间信仰中，葫芦也因此成为了消灾祛病、保佑平安的吉祥物。</p><p>我们的八仙系列葫芦工艺品，以八仙为主题，运用多种传统工艺技法，将八仙的形象和故事生动地呈现在葫芦之上。</p>',
+    author: '葫韵工作室',
+  },
+  {
+    id: '5',
+    title: '纣王酒池',
+    image: '/images/story-zhou-xin.jpg',
+    excerpt: '商纣王酒池肉林的奢靡传说，葫芦见证千年兴衰。',
+    content: '<p>商朝末年，纣王沉迷酒色，以葫芦为酒器，建造了著名的"酒池肉林"。这段历史虽然以亡国告终，却也让葫芦作为酒器的历史更加悠久。</p><p>据考古发现，早在新石器时代，葫芦就已经被用作酒器和水器。在中国数千年的饮酒文化中，葫芦始终扮演着重要的角色。</p><p>我们的酒葫芦系列，正是对这一悠久历史的致敬。每一个酒葫芦都经过严格的选材和精湛的工艺制作，既是对传统的传承，也是对品质的坚持。</p>',
+    author: '葫韵工作室',
   },
 ]
 
-const sampleStories = [
-  {
-    id: '1',
-    title: '葫芦工艺的起源与传承',
-    slug: 'origin-of-gourd-craft',
-    content: '葫芦工艺起源于中国古代...',
-    excerpt: '探索葫芦工艺在中国传统文化中的起源，以及这门古老技艺如何在现代社会中传承与发展。',
-    image: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=2070&auto=format&fit=crop',
-    author: '葫韵工作室',
-    publishedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    title: '传统雕刻技法详解',
-    slug: 'traditional-carving-techniques',
-    content: '雕刻是葫芦工艺的核心...',
-    excerpt: '深入了解传统葫芦雕刻的各种技法，从选材到成品，每一步都蕴含着匠人的心血。',
-    image: null,
-    author: '葫韵工作室',
-    publishedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '3',
-    title: '葫芦在民俗文化中的象征意义',
-    slug: 'gourd-symbolism',
-    content: '葫芦在中国文化中象征着...',
-    excerpt: '葫芦在中国传统文化中承载着丰富的象征意义，了解这些寓意能让我们更好地欣赏葫芦艺术。',
-    image: null,
-    author: '葫韵工作室',
-    publishedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-]
+/* ===========================
+   Scroll Animation Hook
+   =========================== */
+
+function useScrollAnimation() {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible')
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    const elements = ref.current?.querySelectorAll('.fade-in-section, .fade-in-left, .fade-in-right, .fade-in-scale')
+    elements?.forEach((el) => observer.observe(el))
+
+    return () => observer.disconnect()
+  }, [])
+
+  return ref
+}
+
+/* ===========================
+   Home Page Component
+   =========================== */
 
 export default function HomePage() {
-  const products = sampleProducts
-  const stories = sampleStories
+  const sectionRef = useScrollAnimation()
+  const [selectedStory, setSelectedStory] = useState<typeof stories[0] | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const openStoryModal = (story: typeof stories[0]) => {
+    setSelectedStory(story)
+    setIsModalOpen(true)
+  }
 
   return (
-    <>
-      {/* Hero Section */}
-      <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-stone-900">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-stone-900/60 via-stone-900/40 to-stone-900/80" />
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center" />
-        </div>
-        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-light text-white mb-6 tracking-tight">
-            葫韵
-            <span className="block text-2xl sm:text-3xl font-normal mt-2 text-stone-300">
-              HUYUN
-            </span>
-          </h1>
-          <p className="text-lg sm:text-xl text-stone-200 mb-8 max-w-2xl mx-auto leading-relaxed">
-            传承千年葫芦工艺，每一件作品都承载着匠人的心血与智慧
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/products"
-              className="inline-flex items-center justify-center px-8 py-4 bg-white text-stone-900 rounded-none hover:bg-stone-100 transition-colors text-sm tracking-wider"
-            >
-              探索作品
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-            <Link
-              href="/stories"
-              className="inline-flex items-center justify-center px-8 py-4 border border-white text-white rounded-none hover:bg-white/10 transition-colors text-sm tracking-wider"
-            >
-              了解工艺
-            </Link>
+    <div ref={sectionRef}>
+      {/* ===========================
+          Hero Carousel
+          =========================== */}
+      <HeroCarousel slides={heroSlides} autoPlayInterval={5000} />
+
+      {/* ===========================
+          Categories Section
+          =========================== */}
+      <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--color-parchment)' }}>
+        <div className="max-w-[1280px] mx-auto">
+          <div className="text-center mb-12 fade-in-section">
+            <h2 className="font-serif text-2xl md:text-3xl font-semibold text-[var(--color-ink)] mb-3">
+              工艺分类
+            </h2>
+            <p className="text-sm text-[var(--color-ink)] opacity-60 max-w-lg mx-auto">
+              五大工艺门类，涵盖烙画、雕刻、彩绘、天然及茶具，满足不同审美需求
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+            {categories.map((cat, i) => (
+              <Link
+                key={cat.name}
+                href={cat.href}
+                className={`category-card fade-in-section`}
+                style={{ transitionDelay: `${i * 0.1}s` }}
+              >
+                <Image
+                  src={cat.image}
+                  alt={cat.name}
+                  fill
+                  className="category-card-image"
+                  sizes="(max-width: 768px) 50vw, 20vw"
+                />
+                <div className="category-card-overlay">
+                  <h3 className="category-card-title">{cat.name}</h3>
+                  <p className="category-card-desc">{cat.desc}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-stone-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-end justify-between mb-12">
+      {/* ===========================
+          Products Section
+          =========================== */}
+      <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--color-rice)' }}>
+        <div className="max-w-[1280px] mx-auto">
+          <div className="flex items-end justify-between mb-12 fade-in-section">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-light text-stone-900 mb-2">
+              <h2 className="font-serif text-2xl md:text-3xl font-semibold text-[var(--color-ink)] mb-3">
                 精选作品
               </h2>
-              <p className="text-stone-600">匠心独运，每一件都是艺术品</p>
+              <p className="text-sm text-[var(--color-ink)] opacity-60">
+                匠心独运，每一件都是独一无二的艺术品
+              </p>
             </div>
             <Link
               href="/products"
-              className="hidden sm:inline-flex items-center text-stone-900 hover:text-stone-600 transition-colors text-sm"
+              className="hidden sm:inline-flex items-center gap-1 text-sm text-[var(--color-cinnabar)] hover:text-[var(--color-cinnabar-dark)] transition-colors tracking-wider"
             >
               查看全部
-              <ArrowRight className="ml-1 h-4 w-4" />
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product as any} />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {products.map((product, i) => (
+              <div key={product.id} className="fade-in-section" style={{ transitionDelay: `${i * 0.08}s` }}>
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
           <div className="mt-8 text-center sm:hidden">
             <Link
               href="/products"
-              className="inline-flex items-center text-stone-900 hover:text-stone-600 transition-colors text-sm"
+              className="inline-flex items-center gap-1 text-sm text-[var(--color-cinnabar)] tracking-wider"
             >
-              查看全部
-              <ArrowRight className="ml-1 h-4 w-4" />
+              查看全部作品
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Craftsmanship Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="relative aspect-[4/3] bg-stone-100">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=80&w=2449&auto=format&fit=crop')] bg-cover bg-center" />
-            </div>
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-light text-stone-900 mb-6">
-                传统工艺，现代诠释
-              </h2>
-              <div className="space-y-4 text-stone-600 leading-relaxed">
-                <p>
-                  葫芦在中国文化中承载着吉祥、福禄的美好寓意。我们的每一件作品都源自对传统工艺的深刻理解与尊重。
-                </p>
-                <p>
-                  从选料、雕刻到上色，每一道工序都由经验丰富的匠人手工完成。我们相信，只有用心，才能创造出有温度的作品。
-                </p>
-                <p>
-                  葫韵致力于将这份传统美学带入现代生活，让更多人感受到东方工艺的独特魅力。
-                </p>
-              </div>
-              <Link
-                href="/stories"
-                className="inline-flex items-center mt-8 text-stone-900 hover:text-stone-600 transition-colors text-sm"
+      {/* ===========================
+          Stories Section (Dark Background)
+          =========================== */}
+      <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--color-ink)' }}>
+        <div className="max-w-[1280px] mx-auto">
+          <div className="text-center mb-12 fade-in-section">
+            <h2 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-3">
+              葫芦故事
+            </h2>
+            <p className="text-sm text-white/60 max-w-lg mx-auto">
+              每一个葫芦背后都有一个故事，每一段故事都承载着文化的传承
+            </p>
+          </div>
+
+          {/* Story Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+            {stories.slice(0, 4).map((story, i) => (
+              <div
+                key={story.id}
+                className="story-card fade-in-section cursor-pointer"
+                style={{ transitionDelay: `${i * 0.1}s` }}
+                onClick={() => openStoryModal(story)}
               >
-                了解更多工艺故事
-                <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stories Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-stone-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-light text-stone-900 mb-2">
-                工艺故事
-              </h2>
-              <p className="text-stone-600">探索葫芦文化背后的精彩故事</p>
-            </div>
-            <Link
-              href="/stories"
-              className="hidden sm:inline-flex items-center text-stone-900 hover:text-stone-600 transition-colors text-sm"
-            >
-              查看全部
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {stories.map((story) => (
-              <StoryCard key={story.id} story={story as any} />
+                <div className="story-card-image-wrapper">
+                  <Image
+                    src={story.image}
+                    alt={story.title}
+                    fill
+                    className="story-card-image"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                  <div className="story-card-overlay">
+                    <h3 className="story-card-title">{story.title}</h3>
+                    <p className="story-card-excerpt">{story.excerpt}</p>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
+
+          {/* Featured Story */}
+          <div
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center fade-in-section cursor-pointer"
+            onClick={() => openStoryModal(stories[4])}
+          >
+            <div className="relative aspect-[16/10] overflow-hidden">
+              <Image
+                src={stories[4].image}
+                alt={stories[4].title}
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-700"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+            <div>
+              <span className="text-xs tracking-[0.2em] uppercase text-[var(--color-gold)]">
+                精选故事
+              </span>
+              <h3 className="font-serif text-2xl md:text-3xl font-semibold text-white mt-2 mb-4">
+                {stories[4].title}
+              </h3>
+              <p className="text-sm text-white/70 leading-relaxed mb-6">
+                {stories[4].excerpt}
+              </p>
+              <span className="inline-flex items-center gap-1 text-sm text-[var(--color-cinnabar-light)] hover:text-white transition-colors">
+                阅读全文
+                <ArrowRight className="w-4 h-4" />
+              </span>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-stone-900">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-light text-white mb-4">
-            订阅我们
-          </h2>
-          <p className="text-stone-400 mb-8">
-            获取最新作品资讯和独家优惠
+      {/* ===========================
+          Heritage Section
+          =========================== */}
+      <section id="heritage" className="heritage-section">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="relative aspect-[4/3] overflow-hidden fade-in-left">
+              <Image
+                src="/images/about-craftsmanship.jpg"
+                alt="匠心传承"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+            <div className="fade-in-right">
+              <span className="text-xs tracking-[0.2em] uppercase text-[var(--color-cinnabar)]">
+                匠心传承
+              </span>
+              <h2 className="font-serif text-2xl md:text-3xl font-semibold text-[var(--color-ink)] mt-2 mb-6">
+                千年工艺 代代相传
+              </h2>
+              <p className="text-sm text-[var(--color-ink)] opacity-70 leading-relaxed mb-6">
+                葫芦工艺在中国有着数千年的历史。从选材到成品，每一道工序都凝聚着匠人的心血与智慧。我们的工艺传承人，世代从事葫芦加工，将这门古老技艺完整地保留至今。
+              </p>
+              <div className="grid grid-cols-3 gap-6 mb-8">
+                <div className="text-center">
+                  <div className="feature-icon mx-auto">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
+                  </div>
+                  <h4 className="font-serif text-sm font-medium text-[var(--color-ink)] mb-1">纯手工</h4>
+                  <p className="text-xs text-[var(--color-ink)] opacity-50">每一件作品均为手工制作</p>
+                </div>
+                <div className="text-center">
+                  <div className="feature-icon mx-auto">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h4 className="font-serif text-sm font-medium text-[var(--color-ink)] mb-1">百年传承</h4>
+                  <p className="text-xs text-[var(--color-ink)] opacity-50">世代相传的精湛技艺</p>
+                </div>
+                <div className="text-center">
+                  <div className="feature-icon mx-auto">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                  </div>
+                  <h4 className="font-serif text-sm font-medium text-[var(--color-ink)] mb-1">独一无二</h4>
+                  <p className="text-xs text-[var(--color-ink)] opacity-50">每件作品都是孤品</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===========================
+          Origin Section (Dark Background)
+          =========================== */}
+      <section id="origin" className="origin-section">
+        <div className="max-w-[1280px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="fade-in-left">
+              <span className="text-xs tracking-[0.2em] uppercase text-[var(--color-gold)]">
+                中国葫芦之乡
+              </span>
+              <h2 className="font-serif text-2xl md:text-3xl font-semibold text-white mt-2 mb-6">
+                山东聊城 · 葫芦之乡
+              </h2>
+              <p className="text-sm text-white/70 leading-relaxed mb-8">
+                聊城，位于山东省西部，素有"中国葫芦之乡"的美誉。这里种植葫芦的历史已有六百余年，是全国最大的葫芦种植和加工基地。聊城葫芦以其品种繁多、品质优良而闻名于世。
+              </p>
+              <div className="grid grid-cols-3 gap-8">
+                <div className="text-center">
+                  <div className="stat-number">600+</div>
+                  <p className="stat-label">年种植历史</p>
+                </div>
+                <div className="text-center">
+                  <div className="stat-number">50+</div>
+                  <p className="stat-label">葫芦品种</p>
+                </div>
+                <div className="text-center">
+                  <div className="stat-number">1000+</div>
+                  <p className="stat-label">从业家庭</p>
+                </div>
+              </div>
+            </div>
+            <div className="relative aspect-[4/3] overflow-hidden fade-in-right">
+              <Image
+                src="/images/about-origin.jpg"
+                alt="聊城葫芦之乡"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===========================
+          Newsletter Section
+          =========================== */}
+      <section className="newsletter-section">
+        <div className="max-w-[1280px] mx-auto">
+          <h2 className="newsletter-title">订阅葫韵资讯</h2>
+          <p className="newsletter-desc">
+            第一时间获取新品资讯、工艺故事和独家优惠
           </p>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
             <input
               type="email"
-              placeholder="输入您的邮箱"
-              className="flex-1 px-4 py-3 bg-white/10 border border-white/20 text-white placeholder:text-stone-500 focus:outline-none focus:border-white/40"
+              placeholder="请输入您的邮箱地址"
+              className="newsletter-input"
             />
-            <button
-              type="submit"
-              className="px-8 py-3 bg-white text-stone-900 hover:bg-stone-100 transition-colors text-sm tracking-wider"
-            >
-              订阅
+            <button type="submit" className="newsletter-button">
+              立即订阅
             </button>
           </form>
         </div>
       </section>
-    </>
+
+      {/* ===========================
+          Story Modal
+          =========================== */}
+      <StoryModal
+        story={selectedStory}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </div>
   )
 }

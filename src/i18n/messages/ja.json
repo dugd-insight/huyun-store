@@ -5,54 +5,106 @@
   },
   "navigation": {
     "home": "ホーム",
-    "products": "作品",
+    "categories": "カテゴリー",
+    "products": "おすすめ",
     "stories": "ストーリー",
-    "about": "について",
+    "heritage": "伝統",
+    "origin": "起源",
     "contact": "お問い合わせ",
     "cart": "カート",
-    "account": "アカウント",
     "signIn": "ログイン",
     "signOut": "ログアウト"
   },
-  "home": {
-    "hero": {
-      "title": "葫韵",
-      "subtitle": "千年のひょうたん工芸を受け継ぎ、職人の心と知恵が込められた作品",
-      "ctaPrimary": "作品を見る",
-      "ctaSecondary": "工芸を知る"
-    },
-    "featured": {
-      "title": "おすすめ作品",
-      "subtitle": "丹精込めて作られた、一つ一つが芸術品",
-      "viewAll": "すべて見る"
-    },
-    "craftsmanship": {
-      "title": "伝統工芸、現代の解釈",
-      "description": "ひょうたんは中国文化で吉祥と幸福を象徴します。私たちの作品は、伝統工芸への深い理解と敬意から生まれています。",
-      "link": "工芸ストーリーをもっと見る"
-    },
-    "stories": {
-      "title": "工芸ストーリー",
-      "subtitle": "ひょうたん文化の奥深いストーリーを探索"
-    },
-    "newsletter": {
-      "title": "ニュースレター",
-      "description": "最新の作品情報と特別オファーを受け取る",
-      "placeholder": "メールアドレスを入力",
-      "button": "購読"
-    }
+  "hero": {
+    "badge1": "千年の伝統 · 職人の技",
+    "title1": "葫韵 · 伝統的ひょうたん工芸",
+    "subtitle1": "千年のひょうたん工芸を受け継ぎ、職人の心と知恵が込められた作品。",
+    "cta1": "作品を見る",
+    "badge2": "手作り烙画 · 唯一無二",
+    "title2": "烙画ひょうたん",
+    "subtitle2": "火を墨に、ひょうたんを紙に、千年の烙画技法が独自の芸術的魅力を放ちます。",
+    "cta2": "詳しく見る",
+    "badge3": "精巧な彫刻 · 見事な腕前",
+    "title3": "彫刻ひょうたん",
+    "subtitle3": "一刃一刃に職人の功力と美学が込められ、伝統技法を極限に推し進めます。",
+    "cta3": "コレクションを見る",
+    "badge4": "鮮やかな彩絵 · 縁起の良い意味",
+    "title4": "彩絵ひょうたん",
+    "subtitle4": "色鮮やかな彩絵ひょうたん、福禄双全の美しい願いを携え、贈り物に最適。",
+    "cta4": "詳細を見る"
+  },
+  "categories": {
+    "title": "工芸カテゴリー",
+    "subtitle": "烙画、彫刻、彩絵、天然、茶器の5大カテゴリー",
+    "pyrography": "烙画ひょうたん",
+    "pyrographyDesc": "火を墨に、千年の技",
+    "carved": "彫刻ひょうたん",
+    "carvedDesc": "精巧な彫刻、見事な腕前",
+    "painted": "彩絵ひょうたん",
+    "paintedDesc": "鮮やかな彩絵、縁起の良い意味",
+    "natural": "天然ひょうたん",
+    "naturalDesc": "天然の美しさ、純粋な素朴さ",
+    "teaset": "ひょうたん茶器",
+    "teasetDesc": "茶の趣、壺の中の天地"
   },
   "products": {
-    "title": "すべての作品",
-    "subtitle": "丁寧に作り上げたひょうたん工芸コレクション",
-    "filters": {
-      "all": "すべて",
-      "categories": "カテゴリー"
-    },
-    "empty": "商品がありません",
+    "title": "おすすめ作品",
+    "subtitle": "丹精込めて作られた、一つ一つが芸術品",
+    "viewAll": "すべて見る",
+    "allProducts": "すべての作品",
+    "allProductsSubtitle": "丁寧に作り上げたひょうたん工芸コレクション",
+    "search": "作品を検索...",
+    "filterAll": "すべて",
+    "results": "{count}件の作品",
+    "noResults": "一致する作品が見つかりません",
+    "clearFilter": "フィルターをクリア",
     "addToCart": "カートに追加",
-    "outOfStock": "売り切れ",
-    "price": "価格"
+    "badgeNew": "新着",
+    "badgeFeatured": "厳選",
+    "badgeSale": "セール",
+    "addedToCart": "カートに追加しました"
+  },
+  "stories": {
+    "title": "ひょうたんストーリー",
+    "subtitle": "ひょうたん一つ一つに物語があり、文化の伝承を担っています",
+    "featured": "特集ストーリー",
+    "readMore": "続きを読む",
+    "moreStories": "その他のストーリー",
+    "pandaWine": "パンダ酒ひょうたん",
+    "pandaExcerpt": "国宝パンダとひょうたん酒器の素晴らしい組み合わせ。",
+    "liBai": "詩仙・李白",
+    "liBaiExcerpt": "詩仙李白とひょうたんの千年の物語。",
+    "wuSong": "武松の虎退治",
+    "wuSongExcerpt": "水滸伝の英雄武松の物語をひょうたんに。",
+    "eightImmortals": "八仙伝説",
+    "eightImmortalsExcerpt": "八仙が海を渡り、ひょうたんが仙人の法力と知恵を携える。",
+    "zhouXin": "紂王の酒池",
+    "zhouXinExcerpt": "紂王の酒池肉林の豪華な伝説、千年の興亡を见证。"
+  },
+  "heritage": {
+    "label": "伝統",
+    "title": "千年の工芸、代々受け継がれる",
+    "description": "ひょうたん工芸は中国で数千年の歴史があります。素材選びから完成品まで、全工程に職人の心血が凝縮されています。",
+    "handmade": "手作り",
+    "handmadeDesc": "全作品が手作り",
+    "heritage": "百年の伝統",
+    "heritageDesc": "代々受け継がれた精湛な技",
+    "unique": "唯一無二",
+    "uniqueDesc": "各作品が唯一の一品"
+  },
+  "origin": {
+    "label": "中国ひょうたんの郷",
+    "title": "山東省聊城 · ひょうたんの郷",
+    "description": "聊城は山東省西部に位置し、「中国ひょうたんの郷」として600年以上のひょうたん栽培の歴史があります。",
+    "statYears": "年の栽培歴史",
+    "statVarieties": "ひょうたん品種",
+    "statFamilies": "栽培農家"
+  },
+  "newsletter": {
+    "title": "葫韵ニュースを購読",
+    "description": "最新の作品情報、工芸ストーリー、限定オファーをお届け",
+    "placeholder": "メールアドレスを入力",
+    "button": "購読する"
   },
   "cart": {
     "title": "ショッピングカート",
@@ -62,18 +114,23 @@
     "total": "合計",
     "remove": "削除"
   },
-  "stories": {
-    "title": "工芸ストーリー",
-    "subtitle": "ひょうたん文化の奥深いストーリーと伝統工芸を探索",
-    "featured": "特集ストーリー",
-    "readMore": "続きを読む",
-    "moreStories": "その他のストーリー"
-  },
   "footer": {
-    "shop": "ショップ",
-    "about": "について",
-    "support": "サポート",
+    "tagline": "千年のひょうたん工芸を受け継ぎ、東洋の美学を現代の生活に。",
+    "categories": "カテゴリー",
+    "stories": "ストーリー",
+    "service": "カスタマーサービス",
+    "shipping": "配送案内",
+    "returns": "返品ポリシー",
+    "faq": "よくある質問",
     "privacy": "プライバシーポリシー",
-    "terms": "利用規約"
+    "email": "お問い合わせメール",
+    "phone": "サービス hotline",
+    "copyright": "千年の伝統、職人の技",
+    "privacyPolicy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "sitemap": "サイトマップ"
+  },
+  "toast": {
+    "addedToCart": "カートに追加しました"
   }
 }

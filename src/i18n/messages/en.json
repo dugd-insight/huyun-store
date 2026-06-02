@@ -5,54 +5,106 @@
   },
   "navigation": {
     "home": "Home",
-    "products": "Products",
+    "categories": "Categories",
+    "products": "Featured",
     "stories": "Stories",
-    "about": "About",
+    "heritage": "Heritage",
+    "origin": "Origin",
     "contact": "Contact",
     "cart": "Cart",
-    "account": "Account",
     "signIn": "Sign In",
     "signOut": "Sign Out"
   },
-  "home": {
-    "hero": {
-      "title": "HUYUN",
-      "subtitle": "Inheriting thousand-year-old gourd craftsmanship, each piece carries the heart and wisdom of artisans",
-      "ctaPrimary": "Explore Products",
-      "ctaSecondary": "Learn Craft"
-    },
-    "featured": {
-      "title": "Featured Products",
-      "subtitle": "Crafted with care, each piece is a work of art",
-      "viewAll": "View All"
-    },
-    "craftsmanship": {
-      "title": "Traditional Craft, Modern Interpretation",
-      "description": "Gourds in Chinese culture carry auspicious meanings of good fortune. Each of our pieces stems from a deep understanding and respect for traditional craftsmanship.",
-      "link": "Learn more craft stories"
-    },
-    "stories": {
-      "title": "Craft Stories",
-      "subtitle": "Explore the fascinating stories behind gourd culture"
-    },
-    "newsletter": {
-      "title": "Subscribe",
-      "description": "Get the latest product updates and exclusive offers",
-      "placeholder": "Enter your email",
-      "button": "Subscribe"
-    }
+  "hero": {
+    "badge1": "Millennium Heritage · Master Craftsmanship",
+    "title1": "HUYUN · Traditional Gourd Craft",
+    "subtitle1": "Inheriting thousand-year-old gourd craftsmanship, each piece carries the heart and wisdom of artisans.",
+    "cta1": "Explore Products",
+    "badge2": "Handmade Pyrography · One of a Kind",
+    "title2": "Pyrography Gourds",
+    "subtitle2": "Using fire as ink and gourds as canvas, the millennium-old pyrography art blooms with unique charm.",
+    "cta2": "Learn More",
+    "badge3": "Exquisite Carving · Masterful Craft",
+    "title3": "Carved Gourds",
+    "subtitle3": "Every cut embodies the artisan's skill and aesthetics, pushing traditional craft to its peak.",
+    "cta3": "Browse Collection",
+    "badge4": "Vibrant Painting · Auspicious Meaning",
+    "title4": "Painted Gourds",
+    "subtitle4": "Colorful painted gourds carrying blessings of fortune and prosperity, perfect gifts.",
+    "cta4": "View Details"
+  },
+  "categories": {
+    "title": "Craft Categories",
+    "subtitle": "Five major craft categories covering pyrography, carving, painting, natural and teaware",
+    "pyrography": "Pyrography Gourds",
+    "pyrographyDesc": "Fire as ink, millennium art",
+    "carved": "Carved Gourds",
+    "carvedDesc": "Exquisite carving, masterful craft",
+    "painted": "Painted Gourds",
+    "paintedDesc": "Vibrant painting, auspicious meaning",
+    "natural": "Natural Gourds",
+    "naturalDesc": "Natural beauty, pure simplicity",
+    "teaset": "Gourd Teaware",
+    "teasetDesc": "Tea elegance, world in a pot"
   },
   "products": {
-    "title": "All Products",
-    "subtitle": "Explore our carefully crafted gourd craft collection",
-    "filters": {
-      "all": "All",
-      "categories": "Categories"
-    },
-    "empty": "No products available",
+    "title": "Featured Products",
+    "subtitle": "Crafted with care, each piece is a unique work of art",
+    "viewAll": "View All",
+    "allProducts": "All Products",
+    "allProductsSubtitle": "Explore our carefully crafted gourd craft collection",
+    "search": "Search products...",
+    "filterAll": "All",
+    "results": "{count} products found",
+    "noResults": "No matching products found",
+    "clearFilter": "Clear filters",
     "addToCart": "Add to Cart",
-    "outOfStock": "Out of Stock",
-    "price": "Price"
+    "badgeNew": "New",
+    "badgeFeatured": "Featured",
+    "badgeSale": "Sale",
+    "addedToCart": "Added to cart"
+  },
+  "stories": {
+    "title": "Gourd Stories",
+    "subtitle": "Every gourd has a story, every story carries cultural heritage",
+    "featured": "Featured Story",
+    "readMore": "Read More",
+    "moreStories": "More Stories",
+    "pandaWine": "Panda Wine Gourd",
+    "pandaExcerpt": "A wonderful combination of the national treasure panda and gourd wine vessel.",
+    "liBai": "Poet Li Bai",
+    "liBaiExcerpt": "The millennium romance between poet Li Bai and gourds.",
+    "wuSong": "Wu Song Fights the Tiger",
+    "wuSongExcerpt": "The classic tale of Water Margin hero Wu Song, brought to life on gourds.",
+    "eightImmortals": "Eight Immortals Legend",
+    "eightImmortalsExcerpt": "Eight Immortals crossing the sea, gourds carrying divine power and wisdom.",
+    "zhouXin": "King Zhou's Wine Pool",
+    "zhouXinExcerpt": "The lavish legend of King Zhou's wine pool, gourds witnessing millennia of rise and fall."
+  },
+  "heritage": {
+    "label": "Heritage",
+    "title": "Millennium Craft, Passed Down Through Generations",
+    "description": "Gourd craftsmanship in China has a history of thousands of years. From material selection to finished product, every step embodies the artisan's dedication.",
+    "handmade": "Handmade",
+    "handmadeDesc": "Every piece is handcrafted",
+    "heritage": "Century Heritage",
+    "heritageDesc": "Skills passed down through generations",
+    "unique": "One of a Kind",
+    "uniqueDesc": "Each piece is unique"
+  },
+  "origin": {
+    "label": "Hometown of Chinese Gourds",
+    "title": "Liaocheng, Shandong · Hometown of Gourds",
+    "description": "Liaocheng, in western Shandong Province, is renowned as the 'Hometown of Chinese Gourds' with over 600 years of gourd cultivation history.",
+    "statYears": "Years of History",
+    "statVarieties": "Gourd Varieties",
+    "statFamilies": "Farming Families"
+  },
+  "newsletter": {
+    "title": "Subscribe to HUYUN News",
+    "description": "Get the latest product updates, craft stories and exclusive offers",
+    "placeholder": "Enter your email address",
+    "button": "Subscribe Now"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -62,18 +114,23 @@
     "total": "Total",
     "remove": "Remove"
   },
-  "stories": {
-    "title": "Craft Stories",
-    "subtitle": "Explore the fascinating stories and traditional crafts behind gourd culture",
-    "featured": "Featured Story",
-    "readMore": "Read More",
-    "moreStories": "More Stories"
-  },
   "footer": {
-    "shop": "Shop",
-    "about": "About",
-    "support": "Support",
+    "tagline": "Inheriting thousand-year-old gourd craftsmanship, bringing Eastern aesthetics into modern life.",
+    "categories": "Categories",
+    "stories": "Stories",
+    "service": "Customer Service",
+    "shipping": "Shipping Info",
+    "returns": "Return Policy",
+    "faq": "FAQ",
     "privacy": "Privacy Policy",
-    "terms": "Terms of Use"
+    "email": "Contact Email",
+    "phone": "Service Hotline",
+    "copyright": "Millennium Heritage, Master Craftsmanship",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "sitemap": "Sitemap"
+  },
+  "toast": {
+    "addedToCart": "Added to cart"
   }
 }

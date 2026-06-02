@@ -5,54 +5,106 @@
   },
   "navigation": {
     "home": "首页",
-    "products": "作品",
-    "stories": "故事",
-    "about": "关于",
-    "contact": "联系",
+    "categories": "工艺分类",
+    "products": "精选作品",
+    "stories": "葫芦故事",
+    "heritage": "匠心传承",
+    "origin": "聊城之源",
+    "contact": "联系我们",
     "cart": "购物车",
-    "account": "账户",
     "signIn": "登录",
     "signOut": "退出"
   },
-  "home": {
-    "hero": {
-      "title": "葫韵",
-      "subtitle": "传承千年葫芦工艺，每一件作品都承载着匠人的心血与智慧",
-      "ctaPrimary": "探索作品",
-      "ctaSecondary": "了解工艺"
-    },
-    "featured": {
-      "title": "精选作品",
-      "subtitle": "匠心独运，每一件都是艺术品",
-      "viewAll": "查看全部"
-    },
-    "craftsmanship": {
-      "title": "传统工艺，现代诠释",
-      "description": "葫芦在中国文化中承载着吉祥、福禄的美好寓意。我们的每一件作品都源自对传统工艺的深刻理解与尊重。",
-      "link": "了解更多工艺故事"
-    },
-    "stories": {
-      "title": "工艺故事",
-      "subtitle": "探索葫芦文化背后的精彩故事"
-    },
-    "newsletter": {
-      "title": "订阅我们",
-      "description": "获取最新作品资讯和独家优惠",
-      "placeholder": "输入您的邮箱",
-      "button": "订阅"
-    }
+  "hero": {
+    "badge1": "千年传承 匠心独运",
+    "title1": "葫韵 · 传统葫芦工艺",
+    "subtitle1": "传承千年葫芦工艺，每一件作品都承载着匠人的心血与智慧，将东方美学融入现代生活。",
+    "cta1": "探索作品",
+    "badge2": "手工烙画 独一无二",
+    "title2": "烙画葫芦",
+    "subtitle2": "以火为墨，以葫芦为纸，千年烙画技艺在葫芦上绽放出独特的艺术魅力。",
+    "cta2": "了解更多",
+    "badge3": "精雕细琢 巧夺天工",
+    "title3": "雕刻葫芦",
+    "subtitle3": "每一刀都蕴含着匠人的功力与审美，雕刻葫芦将传统技艺推向极致。",
+    "cta3": "浏览精品",
+    "badge4": "彩绘生辉 寓意吉祥",
+    "title4": "彩绘葫芦",
+    "subtitle4": "色彩斑斓的彩绘葫芦，承载着福禄双全的美好祝愿，是送礼佳品。",
+    "cta4": "查看详情"
+  },
+  "categories": {
+    "title": "工艺分类",
+    "subtitle": "五大工艺门类，涵盖烙画、雕刻、彩绘、天然及茶具，满足不同审美需求",
+    "pyrography": "烙画葫芦",
+    "pyrographyDesc": "以火为墨，千年技艺",
+    "carved": "雕刻葫芦",
+    "carvedDesc": "精雕细琢，巧夺天工",
+    "painted": "彩绘葫芦",
+    "paintedDesc": "彩绘生辉，寓意吉祥",
+    "natural": "素葫芦",
+    "naturalDesc": "天然本色，返璞归真",
+    "teaset": "葫芦茶具",
+    "teasetDesc": "茶韵悠长，壶中天地"
   },
   "products": {
-    "title": "全部作品",
-    "subtitle": "探索我们精心打造的葫芦工艺品系列",
-    "filters": {
-      "all": "全部",
-      "categories": "分类"
-    },
-    "empty": "暂无商品",
+    "title": "精选作品",
+    "subtitle": "匠心独运，每一件都是独一无二的艺术品",
+    "viewAll": "查看全部",
+    "allProducts": "全部作品",
+    "allProductsSubtitle": "探索我们精心打造的葫芦工艺品系列，每一件都承载着匠人的心血",
+    "search": "搜索作品...",
+    "filterAll": "全部",
+    "results": "共 {count} 件作品",
+    "noResults": "未找到匹配的作品",
+    "clearFilter": "清除筛选条件",
     "addToCart": "加入购物车",
-    "outOfStock": "已售罄",
-    "price": "价格"
+    "badgeNew": "新品",
+    "badgeFeatured": "精品",
+    "badgeSale": "特惠",
+    "addedToCart": "已加入购物车"
+  },
+  "stories": {
+    "title": "葫芦故事",
+    "subtitle": "每一个葫芦背后都有一个故事，每一段故事都承载着文化的传承",
+    "featured": "精选故事",
+    "readMore": "阅读全文",
+    "moreStories": "更多故事",
+    "pandaWine": "熊猫酒葫芦",
+    "pandaExcerpt": "国宝熊猫与葫芦酒器的奇妙结合，展现中华文化的独特魅力。",
+    "liBai": "诗仙李白",
+    "liBaiExcerpt": "诗仙李白与葫芦的千年情缘，酒中仙人的浪漫传说。",
+    "wuSong": "武松打虎",
+    "wuSongExcerpt": "水浒英雄武松的经典故事，在葫芦上演绎传奇。",
+    "eightImmortals": "八仙传说",
+    "eightImmortalsExcerpt": "八仙过海各显神通，葫芦承载着仙人的法力与智慧。",
+    "zhouXin": "纣王酒池",
+    "zhouXinExcerpt": "商纣王酒池肉林的奢靡传说，葫芦见证千年兴衰。"
+  },
+  "heritage": {
+    "label": "匠心传承",
+    "title": "千年工艺 代代相传",
+    "description": "葫芦工艺在中国有着数千年的历史。从选材到成品，每一道工序都凝聚着匠人的心血与智慧。我们的工艺传承人，世代从事葫芦加工，将这门古老技艺完整地保留至今。",
+    "handmade": "纯手工",
+    "handmadeDesc": "每一件作品均为手工制作",
+    "heritage": "百年传承",
+    "heritageDesc": "世代相传的精湛技艺",
+    "unique": "独一无二",
+    "uniqueDesc": "每件作品都是孤品"
+  },
+  "origin": {
+    "label": "中国葫芦之乡",
+    "title": "山东聊城 · 葫芦之乡",
+    "description": "聊城，位于山东省西部，素有"中国葫芦之乡"的美誉。这里种植葫芦的历史已有六百余年，是全国最大的葫芦种植和加工基地。聊城葫芦以其品种繁多、品质优良而闻名于世。",
+    "statYears": "年种植历史",
+    "statVarieties": "葫芦品种",
+    "statFamilies": "从业家庭"
+  },
+  "newsletter": {
+    "title": "订阅葫韵资讯",
+    "description": "第一时间获取新品资讯、工艺故事和独家优惠",
+    "placeholder": "请输入您的邮箱地址",
+    "button": "立即订阅"
   },
   "cart": {
     "title": "购物车",
@@ -62,18 +114,23 @@
     "total": "合计",
     "remove": "移除"
   },
-  "stories": {
-    "title": "工艺故事",
-    "subtitle": "探索葫芦文化背后的精彩故事与传统工艺",
-    "featured": "精选故事",
-    "readMore": "阅读全文",
-    "moreStories": "更多故事"
-  },
   "footer": {
-    "shop": "商店",
-    "about": "关于",
-    "support": "帮助",
+    "tagline": "传承千年葫芦工艺，将东方美学带入现代生活。每一件作品都承载着匠人的心血与智慧，承载着中华文化的深厚底蕴。",
+    "categories": "工艺分类",
+    "stories": "葫芦故事",
+    "service": "客户服务",
+    "shipping": "配送说明",
+    "returns": "退换政策",
+    "faq": "常见问题",
     "privacy": "隐私政策",
-    "terms": "使用条款"
+    "email": "联系邮箱",
+    "phone": "服务热线",
+    "copyright": "传承千年，匠心独运",
+    "privacyPolicy": "隐私政策",
+    "terms": "使用条款",
+    "sitemap": "网站地图"
+  },
+  "toast": {
+    "addedToCart": "已加入购物车"
   }
 }

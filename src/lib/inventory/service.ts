@@ -1,5 +1,6 @@
 // Inventory Management Service
 import { prisma } from '@/lib/prisma'
+
 import { InventoryLogType, Prisma } from '@prisma/client'
 
 export interface StockAdjustmentParams {

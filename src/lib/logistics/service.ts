@@ -101,7 +101,7 @@ export async function trackShipment(
     const trackingData = generateMockTracking(
       trackingNumber,
       shipment.carrier,
-      shipment.status
+      shipment.status as ShipmentStatus
     )
 
     // Update shipment with latest tracking data
@@ -110,7 +110,7 @@ export async function trackShipment(
         where: { id: shipment.id },
         data: {
           status: trackingData.status,
-          trackingData: trackingData.events as unknown as Prisma.InputJsonValue,
+          trackingData: trackingData.events as any,
           deliveredAt:
             trackingData.status === 'DELIVERED' ? new Date() : undefined,
         },
@@ -164,7 +164,7 @@ export async function updateShipmentStatus(
       where: { id: shipmentId },
       data: {
         status,
-        trackingData: trackingData as unknown as Prisma.InputJsonValue,
+        trackingData: trackingData as any,
         deliveredAt: status === 'DELIVERED' ? new Date() : undefined,
       },
     })

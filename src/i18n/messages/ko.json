@@ -5,54 +5,106 @@
   },
   "navigation": {
     "home": "홈",
-    "products": "작품",
+    "categories": "카테고리",
+    "products": "추천",
     "stories": "스토리",
-    "about": "소개",
+    "heritage": "전통",
+    "origin": "연원",
     "contact": "문의",
     "cart": "장바구니",
-    "account": "계정",
     "signIn": "로그인",
     "signOut": "로그아웃"
   },
-  "home": {
-    "hero": {
-      "title": "葫韵",
-      "subtitle": "천년의 박 공예를 이어, 장인의 마음과 지혜가 담긴 작품",
-      "ctaPrimary": "작품 보기",
-      "ctaSecondary": "공예 알아보기"
-    },
-    "featured": {
-      "title": "추천 작품",
-      "subtitle": "정성껏 만든 하나하나가 예술품",
-      "viewAll": "모두 보기"
-    },
-    "craftsmanship": {
-      "title": "전통 공예, 현대적 해석",
-      "description": "박은 중국 문화에서 길상과 행복을 상징합니다. 우리의 작품은 전통 공예에 대한 깊은 이해와 존중에서 태어났습니다.",
-      "link": "공예 스토리 더보기"
-    },
-    "stories": {
-      "title": "공예 스토리",
-      "subtitle": "박 문화의 깊은 스토리를 탐험"
-    },
-    "newsletter": {
-      "title": "뉴스레터",
-      "description": "최신 작품 소식과 특별 혜택을 받아보세요",
-      "placeholder": "이메일을 입력하세요",
-      "button": "구독"
-    }
+  "hero": {
+    "badge1": "천년 전통 · 장인의 정성",
+    "title1": "葫韵 · 전통 박 공예",
+    "subtitle1": "천년의 박 공예를 이어, 장인의 마음과 지혜가 담긴 작품.",
+    "cta1": "작품 보기",
+    "badge2": "수공 낙화 · 유일무이",
+    "title2": "낙화 박",
+    "subtitle2": "불을 먹물로, 박을 종이로, 천년의 낙화 기법이 독특한 예술적 매력을 발산합니다.",
+    "cta2": "자세히 보기",
+    "badge3": "정교한 조각 · 기예의 극치",
+    "title3": "조각 박",
+    "subtitle3": "한 칼 한 칼에 장인의 공력과 미학이 담겨, 전통 기법을 극한으로 끌어올립니다.",
+    "cta3": "컬렉션 보기",
+    "badge4": "화려한 채색 · 길상의 의미",
+    "title4": "채색 박",
+    "subtitle4": "화려한 채색 박에 복록쌍전의 아름다운 소원을 담아, 선물로 최적.",
+    "cta4": "상세 보기"
+  },
+  "categories": {
+    "title": "공예 카테고리",
+    "subtitle": "낙화, 조각, 채색, 천연, 다구 5대 카테고리",
+    "pyrography": "낙화 박",
+    "pyrographyDesc": "불을 먹물로, 천년의 기법",
+    "carved": "조각 박",
+    "carvedDesc": "정교한 조각, 기예의 극치",
+    "painted": "채색 박",
+    "paintedDesc": "화려한 채색, 길상의 의미",
+    "natural": "천연 박",
+    "naturalDesc": "천연의 아름다움, 순수한 소박함",
+    "teaset": "박 다구",
+    "teasetDesc": "차의 운치, 호 안의 천지"
   },
   "products": {
-    "title": "모든 작품",
-    "subtitle": "정성껏 만든 박 공예 컬렉션",
-    "filters": {
-      "all": "모두",
-      "categories": "카테고리"
-    },
-    "empty": "상품이 없습니다",
+    "title": "추천 작품",
+    "subtitle": "정성껏 만든 하나하나가 예술품",
+    "viewAll": "모두 보기",
+    "allProducts": "모든 작품",
+    "allProductsSubtitle": "정성껏 만든 박 공예 컬렉션",
+    "search": "작품 검색...",
+    "filterAll": "모두",
+    "results": "{count}개의 작품",
+    "noResults": "일치하는 작품이 없습니다",
+    "clearFilter": "필터 초기화",
     "addToCart": "장바구니에 담기",
-    "outOfStock": "품절",
-    "price": "가격"
+    "badgeNew": "신상",
+    "badgeFeatured": "엄선",
+    "badgeSale": "할인",
+    "addedToCart": "장바구니에 추가되었습니다"
+  },
+  "stories": {
+    "title": "박 스토리",
+    "subtitle": "박 하나하나에 이야기가 있고, 문화의 전승을 담고 있습니다",
+    "featured": "특집 스토리",
+    "readMore": "더 읽기",
+    "moreStories": "더 많은 스토리",
+    "pandaWine": "판다 술 박",
+    "pandaExcerpt": "국보 판다와 박 술병의奇妙한 결합.",
+    "liBai": "시선 이백",
+    "liBaiExcerpt": "시선 이백과 박의 천년 이야기.",
+    "wuSong": "무송 호랑이 잡기",
+    "wuSongExcerpt": "수호전 영웅 무송의 이야기를 박에 담아.",
+    "eightImmortals": "팔선 전설",
+    "eightImmortalsExcerpt": "팔선이 바다를 건너고, 박이 선인의 법력과 지혜를 담다.",
+    "zhouXin": "주왕의 술 못",
+    "zhouXinExcerpt": "주왕의 주지육림 사치传说, 천년의 흥망을 증견."
+  },
+  "heritage": {
+    "label": "전통",
+    "title": "천년 공예, 대대로 이어지다",
+    "description": "박 공예는 중국에서 수천 년의 역사를 가지고 있습니다. 소재 선택부터 완성품까지, 모든 과정에 장인의 혈심이 응축되어 있습니다.",
+    "handmade": "수공",
+    "handmadeDesc": "모든 작품이 수공 제작",
+    "heritage": "백년 전통",
+    "heritageDesc": "대대로 전해진 정교한 기법",
+    "unique": "유일무이",
+    "uniqueDesc": "각 작품이 유일한 일품"
+  },
+  "origin": {
+    "label": "중국 박의 고장",
+    "title": "산둥성 랴오청 · 박의 고장",
+    "description": "랴오청은 산둥성 서부에 위치하며, '중국 박의 고장'으로 600년 이상의 박 재배 역사를 가지고 있습니다.",
+    "statYears": "년 재배 역사",
+    "statVarieties": "박 품종",
+    "statFamilies": "재배 가구"
+  },
+  "newsletter": {
+    "title": "葫韵 뉴스레터 구독",
+    "description": "최신 작품 소식, 공예 스토리, 한정 혜택을 받아보세요",
+    "placeholder": "이메일 주소를 입력하세요",
+    "button": "구독하기"
   },
   "cart": {
     "title": "장바구니",
@@ -62,18 +114,23 @@
     "total": "합계",
     "remove": "삭제"
   },
-  "stories": {
-    "title": "공예 스토리",
-    "subtitle": "박 문화의 깊은 스토리와 전통 공예 탐험",
-    "featured": "특집 스토리",
-    "readMore": "더 읽기",
-    "moreStories": "더 많은 스토리"
-  },
   "footer": {
-    "shop": "쇼핑",
-    "about": "소개",
-    "support": "고객지원",
+    "tagline": "천년의 박 공예를 이어 동양의 미학을 현대 생활에.",
+    "categories": "카테고리",
+    "stories": "스토리",
+    "service": "고객 서비스",
+    "shipping": "배송 안내",
+    "returns": "반품 정책",
+    "faq": "자주 묻는 질문",
     "privacy": "개인정보처리방침",
-    "terms": "이용약관"
+    "email": "문의 이메일",
+    "phone": "서비스 hotline",
+    "copyright": "천년 전통, 장인의 정성",
+    "privacyPolicy": "개인정보처리방침",
+    "terms": "이용약관",
+    "sitemap": "사이트맵"
+  },
+  "toast": {
+    "addedToCart": "장바구니에 추가되었습니다"
   }
 }

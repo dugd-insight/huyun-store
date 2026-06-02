@@ -237,7 +237,7 @@ export async function PUT(request: NextRequest) {
 
     // Deduct stock on successful payment
     if (paymentStatus === 'PAID') {
-      const items = order.items.map((item) => ({
+      const items = order.items.map((item: any) => ({
         productId: item.productId,
         quantity: item.quantity,
       }))
