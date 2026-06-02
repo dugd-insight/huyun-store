@@ -54,10 +54,15 @@ if ! command -v nginx &> /dev/null; then
 fi
 
 echo -e "${YELLOW}步骤 6/10: 创建数据库...${NC}"
+# 使用简单密码避免特殊字符问题
+DB_PASS="HuyunPass2024"
 sudo -u postgres psql << EOF
-CREATE DATABASE ${APP_NAME};
-CREATE USER ${APP_NAME}_user WITH PASSWORD 'huyun_password_2024';
+DROP DATABASE IF EXISTS ${APP_NAME};
+DROP USER IF EXISTS ${APP_NAME}_user;
+CREATE USER ${APP_NAME}_user WITH PASSWORD '${DB_PASS}';
+CREATE DATABASE ${APP_NAME} OWNER ${APP_NAME}_user;
 GRANT ALL PRIVILEGES ON DATABASE ${APP_NAME} TO ${APP_NAME}_user;
+ALTER USER ${APP_NAME}_user WITH SUPERUSER;
 \q
 EOF
 
@@ -80,7 +85,7 @@ npm install
 # 创建环境变量文件
 cat > .env << EOF
 # Database
-DATABASE_URL="postgresql://${APP_NAME}_user:huyun_password_2024@localhost:5432/${APP_NAME}"
+DATABASE_URL="postgresql://${APP_NAME}_user:${DB_PASS}@localhost:5432/${APP_NAME}"
 
 # NextAuth
 NEXTAUTH_SECRET="$(openssl rand -base64 32)"
