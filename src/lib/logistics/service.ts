@@ -1,6 +1,9 @@
 // Logistics Tracking Service
 import { prisma } from '@/lib/prisma'
-import { ShipmentStatus, Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
+
+// Shipment status types (matching Prisma enum)
+type ShipmentStatus = 'PENDING' | 'PICKED_UP' | 'IN_TRANSIT' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'EXCEPTION' | 'RETURNED'
 
 export interface TrackingEvent {
   time: string

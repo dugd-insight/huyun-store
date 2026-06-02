@@ -1,7 +1,9 @@
 // Logistics Webhook Handler
 import { NextRequest, NextResponse } from 'next/server'
 import { updateShipmentStatus, TrackingEvent } from '@/lib/logistics/service'
-import { ShipmentStatus } from '@prisma/client'
+
+// Shipment status types (matching Prisma enum)
+type ShipmentStatus = 'PENDING' | 'PICKED_UP' | 'IN_TRANSIT' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'EXCEPTION' | 'RETURNED'
 
 // Handle carrier webhook updates
 export async function POST(request: NextRequest) {
