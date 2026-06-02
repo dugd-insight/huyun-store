@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { StatCard } from '@/lib/admin/components'
+import { apiClient } from '@/lib/api-client'
 
 interface DashboardStats {
   totalProducts: number
@@ -29,14 +30,35 @@ interface DashboardStats {
     status: string
     createdAt: string
   }>
-  recentPayments: Array<{
-    id: string
-    orderId: string
-    amount: number
-    method: string
-    status: string
-    createdAt: string
-  }>
+}
+
+/** 产品列表 API 响应 */
+interface ProductsResponse {
+  products: Array<{ id: string; name: string; stock: number; [key: string]: unknown }>
+  pagination: { total: number; [key: string]: unknown }
+}
+
+/** 订单结构 */
+interface DashboardOrder {
+  id: string
+  name: string
+  total: number | string
+  status: string
+  createdAt: string
+  [key: string]: unknown
+}
+
+/** 用户结构 */
+interface DashboardUser {
+  id: string
+  role: string
+  [key: string]: unknown
+}
+
+/** 库存预警 API 响应 */
+interface InventoryAlertResponse {
+  alerts?: Array<unknown>
+  [key: string]: unknown
 }
 
 export default function AdminDashboard() {
@@ -50,33 +72,51 @@ export default function AdminDashboard() {
   const fetchDashboardStats = async () => {
     try {
       setIsLoading(true)
-      // Fetch data from multiple endpoints
-      const [productsRes, ordersRes, usersRes, alertsRes] = await Promise.all([
-        fetch('/api/products'),
-        fetch('/api/orders'),
-        fetch('/api/users'),
-        fetch('/api/inventory/alert'),
-      ])
 
-      const products = await productsRes.json()
-      const orders = await ordersRes.json()
-      const users = await usersRes.json()
-      const alerts = await alertsRes.json()
+      // 使用 Promise.allSettled 避免单个请求失败影响整体
+      const [productsResult, ordersResult, usersResult, alertsResult] =
+        await Promise.allSettled([
+          apiClient.get<ProductsResponse>('/api/products?all=true&limit=999'),
+          apiClient.get<DashboardOrder[]>('/api/orders'),
+          apiClient.get<DashboardUser[]>('/api/users'),
+          apiClient.get<InventoryAlertResponse>('/api/inventory/alert'),
+        ])
 
-      // Calculate stats
-      const totalRevenue = orders.reduce((sum: number, order: { total: number }) => sum + Number(order.total), 0)
-      const pendingOrders = orders.filter((o: { status: string }) => o.status === 'PENDING' || o.status === 'PROCESSING')
+      // 提取数据，失败的请求使用默认值
+      const productsData =
+        productsResult.status === 'fulfilled'
+          ? productsResult.value
+          : { products: [], pagination: { total: 0 } }
+
+      const orders: DashboardOrder[] =
+        ordersResult.status === 'fulfilled' ? ordersResult.value : []
+
+      const users: DashboardUser[] =
+        usersResult.status === 'fulfilled' ? usersResult.value : []
+
+      const alerts: InventoryAlertResponse =
+        alertsResult.status === 'fulfilled'
+          ? alertsResult.value
+          : { alerts: [] }
+
+      // 计算统计数据
+      const totalRevenue = orders.reduce(
+        (sum, order) => sum + Number(order.total),
+        0
+      )
+      const pendingOrders = orders.filter(
+        (o) => o.status === 'PENDING' || o.status === 'PROCESSING'
+      )
       const recentOrders = orders.slice(0, 5)
 
       setStats({
-        totalProducts: products.length,
+        totalProducts: productsData.products.length || productsData.pagination.total,
         totalOrders: orders.length,
-        totalUsers: users.length,
+        totalUsers: users.filter((u) => u.role === 'USER').length,
         totalRevenue,
         lowStockCount: alerts.alerts?.length || 0,
         pendingShipments: pendingOrders.length,
         recentOrders,
-        recentPayments: [], // Would fetch from payment records
       })
     } catch (error) {
       console.error('Failed to fetch dashboard stats:', error)
@@ -210,7 +250,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <p className="text-3xl font-bold text-emerald-600 mb-2">
-            ¥{stats.recentOrders.filter((o) => o.status !== 'CANCELLED').reduce((sum, o) => sum + o.total, 0).toFixed(2)}
+            ¥{stats.recentOrders.filter((o) => o.status !== 'CANCELLED').reduce((sum, o) => sum + Number(o.total), 0).toFixed(2)}
           </p>
           <p className="text-sm text-stone-500">今日收款总额</p>
         </div>

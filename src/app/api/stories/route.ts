@@ -6,13 +6,16 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const featured = searchParams.get('featured')
+    const all = searchParams.get('all')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
 
-    const where: any = {
-      publishedAt: {
+    // 默认只返回已发布的故事；当 all=true 时返回所有故事（供管理员使用）
+    const where: any = {}
+    if (all !== 'true') {
+      where.publishedAt = {
         lte: new Date(),
-      },
+      }
     }
 
     if (featured === 'true') {
@@ -27,7 +30,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
         orderBy: {
-          publishedAt: 'desc',
+          createdAt: 'desc',
         },
       }),
       prisma.story.count({ where }),

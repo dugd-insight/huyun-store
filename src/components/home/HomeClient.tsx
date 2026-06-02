@@ -69,7 +69,7 @@ interface ProductData {
 interface StoryData {
   id: string
   title: string
-  image: string
+  image: string | null
   excerpt: string | null
   content: string
   author: string | null
@@ -275,7 +275,7 @@ export default function HomeClient({ products, stories, categories }: HomeClient
                 >
                   <div className="story-card-image-wrapper">
                     <Image
-                      src={story.image}
+                      src={story.image || '/images/story-placeholder.jpg'}
                       alt={story.title}
                       fill
                       className="story-card-image"
@@ -298,7 +298,7 @@ export default function HomeClient({ products, stories, categories }: HomeClient
               >
                 <div className="relative aspect-[16/10] overflow-hidden rounded-lg">
                   <Image
-                    src={stories[4].image}
+                    src={stories[4]?.image || '/images/story-placeholder.jpg'}
                     alt={stories[4].title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"

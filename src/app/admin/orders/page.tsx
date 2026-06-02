@@ -1,18 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import {
   Search,
   Eye,
   Filter,
   X,
-  ChevronDown,
-  Package,
   MapPin,
   Phone,
   Mail,
-  Clock,
 } from 'lucide-react'
 import {
   PageHeader,
@@ -24,14 +20,8 @@ import {
   Modal,
   EmptyState,
 } from '@/lib/admin/components'
-import {
-  getOrders,
-  getOrder,
-  updateOrder,
-  Order,
-  OrderStatus,
-  PaymentStatus,
-} from '@/lib/admin/store'
+import { Order, OrderStatus, PaymentStatus } from '@/lib/admin/store'
+import { apiClient } from '@/lib/api-client'
 import { formatPrice, formatDate, cn } from '@/lib/utils'
 
 const ITEMS_PER_PAGE = 10
@@ -67,9 +57,10 @@ export default function OrdersPage() {
   const [updateStatusType, setUpdateStatusType] = useState<'order' | 'payment' | null>(null)
   const [newStatus, setNewStatus] = useState('')
 
-  const loadData = () => {
+  /** 从 API 加载订单列表 */
+  const loadData = async () => {
     try {
-      const ordersData = getOrders()
+      const ordersData = await apiClient.get<Order[]>('/api/orders')
       setOrders(ordersData)
     } catch (error) {
       console.error('Error loading orders:', error)
@@ -80,10 +71,6 @@ export default function OrdersPage() {
 
   useEffect(() => {
     loadData()
-
-    const handleStorage = () => loadData()
-    window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
   }, [])
 
   // Filter orders
@@ -122,25 +109,32 @@ export default function OrdersPage() {
     setStatusModalOpen(true)
   }
 
-  const handleUpdateStatus = () => {
+  /** 更新订单/支付状态（调用 API） */
+  const handleUpdateStatus = async () => {
     if (!selectedOrder || !updateStatusType || !newStatus) return
 
-    const updateData = updateStatusType === 'order'
-      ? { status: newStatus as OrderStatus }
-      : { paymentStatus: newStatus as PaymentStatus }
+    try {
+      const updateData =
+        updateStatusType === 'order'
+          ? { orderId: selectedOrder.id, status: newStatus }
+          : { orderId: selectedOrder.id, paymentStatus: newStatus }
 
-    updateOrder(selectedOrder.id, updateData)
-    setStatusModalOpen(false)
+      await apiClient.patch('/api/orders', updateData)
+      setStatusModalOpen(false)
 
-    // Refresh data
-    loadData()
+      // 重新加载数据
+      await loadData()
 
-    // Update selected order if detail modal is open
-    if (detailModalOpen && selectedOrder) {
-      const updated = getOrder(selectedOrder.id)
-      if (updated) {
-        setSelectedOrder(updated)
+      // 如果详情弹窗打开，更新选中的订单
+      if (detailModalOpen && selectedOrder) {
+        const updatedOrders = await apiClient.get<Order[]>('/api/orders')
+        const updated = updatedOrders.find((o) => o.id === selectedOrder.id)
+        if (updated) {
+          setSelectedOrder(updated)
+        }
       }
+    } catch (error) {
+      console.error('Error updating order status:', error)
     }
   }
 
@@ -308,7 +302,7 @@ export default function OrdersPage() {
                       {order.items.length} 件商品
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-stone-900">
-                      {formatPrice(order.total)}
+                      {formatPrice(Number(order.total))}
                     </td>
                     <td className="px-6 py-4">
                       {getOrderStatusBadge(order.status)}
@@ -410,11 +404,11 @@ export default function OrdersPage() {
                     <div>
                       <p className="text-sm font-medium text-stone-900">{item.name}</p>
                       <p className="text-xs text-stone-500">
-                        {formatPrice(item.price)} x {item.quantity}
+                        {formatPrice(Number(item.price))} x {item.quantity}
                       </p>
                     </div>
                     <p className="text-sm font-medium text-stone-900">
-                      {formatPrice(item.price * item.quantity)}
+                      {formatPrice(Number(item.price) * item.quantity)}
                     </p>
                   </div>
                 ))}
@@ -423,7 +417,7 @@ export default function OrdersPage() {
                 <div className="text-right">
                   <p className="text-sm text-stone-500">订单总额</p>
                   <p className="text-xl font-semibold text-cinnabar">
-                    {formatPrice(selectedOrder.total)}
+                    {formatPrice(Number(selectedOrder.total))}
                   </p>
                 </div>
               </div>

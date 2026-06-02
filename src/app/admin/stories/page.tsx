@@ -20,13 +20,20 @@ import {
   Modal,
   EmptyState,
 } from '@/lib/admin/components'
-import {
-  getStories,
-  updateStory,
-  deleteStory,
-  Story,
-} from '@/lib/admin/store'
+import { Story } from '@/lib/admin/store'
+import { apiClient } from '@/lib/api-client'
 import { formatDate, truncate, cn } from '@/lib/utils'
+
+/** 故事列表 API 响应结构 */
+interface StoriesResponse {
+  stories: Story[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
 
 export default function StoriesPage() {
   const [stories, setStories] = useState<Story[]>([])
@@ -36,10 +43,11 @@ export default function StoriesPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null)
 
-  const loadData = () => {
+  /** 从 API 加载故事列表（包含未发布的草稿） */
+  const loadData = async () => {
     try {
-      const storiesData = getStories()
-      setStories(storiesData)
+      const data = await apiClient.get<StoriesResponse>('/api/stories?all=true&limit=999')
+      setStories(data.stories)
     } catch (error) {
       console.error('Error loading stories:', error)
     } finally {
@@ -49,24 +57,32 @@ export default function StoriesPage() {
 
   useEffect(() => {
     loadData()
-
-    const handleStorage = () => loadData()
-    window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
   }, [])
 
-  const handleDelete = () => {
+  /** 删除故事（调用 API） */
+  const handleDelete = async () => {
     if (!storyToDelete) return
-    deleteStory(storyToDelete.id)
-    setDeleteModalOpen(false)
-    setStoryToDelete(null)
-    loadData()
+    try {
+      await apiClient.delete(`/api/stories/${storyToDelete.slug}`)
+      setDeleteModalOpen(false)
+      setStoryToDelete(null)
+      await loadData()
+    } catch (error) {
+      console.error('Error deleting story:', error)
+    }
   }
 
-  const handleTogglePublished = (story: Story) => {
-    const newPublishedAt = story.publishedAt ? null : new Date().toISOString()
-    updateStory(story.id, { publishedAt: newPublishedAt })
-    loadData()
+  /** 切换发布状态（调用 API） */
+  const handleTogglePublished = async (story: Story) => {
+    try {
+      const newPublishedAt = story.publishedAt ? null : new Date().toISOString()
+      await apiClient.put(`/api/stories/${story.slug}`, {
+        publishedAt: newPublishedAt,
+      })
+      await loadData()
+    } catch (error) {
+      console.error('Error toggling published:', error)
+    }
   }
 
   if (loading) {

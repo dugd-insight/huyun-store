@@ -7,7 +7,6 @@ import {
   Edit,
   Trash2,
   Layers,
-  ImageIcon,
 } from 'lucide-react'
 import {
   PageHeader,
@@ -18,18 +17,16 @@ import {
   EmptyState,
   Badge,
 } from '@/lib/admin/components'
-import {
-  getCategories,
-  getCategoryProductCount,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  Category,
-  generateSlug,
-} from '@/lib/admin/store'
+import { Category, generateSlug } from '@/lib/admin/store'
+import { apiClient } from '@/lib/api-client'
+
+/** 分类 API 返回结构（包含商品数量） */
+interface CategoryWithCount extends Category {
+  _count?: { products: number }
+}
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([])
+  const [categories, setCategories] = useState<CategoryWithCount[]>([])
   const [loading, setLoading] = useState(true)
   const [productCounts, setProductCounts] = useState<Record<string, number>>({})
 
@@ -49,15 +46,16 @@ export default function CategoriesPage() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [isSaving, setIsSaving] = useState(false)
 
-  const loadData = () => {
+  /** 从 API 加载分类数据 */
+  const loadData = async () => {
     try {
-      const categoriesData = getCategories()
+      const categoriesData = await apiClient.get<CategoryWithCount[]>('/api/categories')
       setCategories(categoriesData)
 
-      // Load product counts for each category
+      // 从 API 返回的 _count 提取商品数量
       const counts: Record<string, number> = {}
       categoriesData.forEach((cat) => {
-        counts[cat.id] = getCategoryProductCount(cat.id)
+        counts[cat.id] = cat._count?.products || 0
       })
       setProductCounts(counts)
     } catch (error) {
@@ -69,10 +67,6 @@ export default function CategoriesPage() {
 
   useEffect(() => {
     loadData()
-
-    const handleStorage = () => loadData()
-    window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
   }, [])
 
   // Open modal for adding/editing
@@ -116,8 +110,8 @@ export default function CategoriesPage() {
     return Object.keys(errors).length === 0
   }
 
-  // Handle form submit
-  const handleSubmit = (e: React.FormEvent) => {
+  /** 提交表单（创建或更新分类，调用 API） */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!validate()) return
@@ -133,13 +127,14 @@ export default function CategoriesPage() {
       }
 
       if (editingCategory) {
-        updateCategory(editingCategory.id, categoryData)
+        // 使用 slug 作为路径参数调用 PUT 更新
+        await apiClient.put(`/api/categories/${editingCategory.slug}`, categoryData)
       } else {
-        createCategory(categoryData)
+        await apiClient.post('/api/categories', categoryData)
       }
 
       setModalOpen(false)
-      loadData()
+      await loadData()
     } catch (error) {
       console.error('Error saving category:', error)
     } finally {
@@ -147,11 +142,11 @@ export default function CategoriesPage() {
     }
   }
 
-  // Handle delete
-  const handleDelete = () => {
+  /** 删除分类（调用 API） */
+  const handleDelete = async () => {
     if (!categoryToDelete) return
 
-    // Check if category has products
+    // 检查分类下是否有商品
     if (productCounts[categoryToDelete.id] > 0) {
       alert('该分类下有商品，无法删除。请先删除或移动该分类下的商品。')
       setDeleteModalOpen(false)
@@ -159,10 +154,14 @@ export default function CategoriesPage() {
       return
     }
 
-    deleteCategory(categoryToDelete.id)
-    setDeleteModalOpen(false)
-    setCategoryToDelete(null)
-    loadData()
+    try {
+      await apiClient.delete(`/api/categories/${categoryToDelete.slug}`)
+      setDeleteModalOpen(false)
+      setCategoryToDelete(null)
+      await loadData()
+    } catch (error) {
+      console.error('Error deleting category:', error)
+    }
   }
 
   // Auto-generate slug from name

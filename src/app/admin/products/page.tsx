@@ -25,17 +25,22 @@ import {
   Modal,
   EmptyState,
 } from '@/lib/admin/components'
-import {
-  getProducts,
-  getCategories,
-  updateProduct,
-  deleteProduct,
-  Product,
-  Category,
-} from '@/lib/admin/store'
+import { Product, Category } from '@/lib/admin/store'
+import { apiClient } from '@/lib/api-client'
 import { formatPrice, cn } from '@/lib/utils'
 
 const ITEMS_PER_PAGE = 10
+
+/** 产品列表 API 响应结构 */
+interface ProductsResponse {
+  products: (Product & { category?: { id: string; name: string; slug: string } })[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
 
 export default function ProductsPage() {
   const router = useRouter()
@@ -51,11 +56,15 @@ export default function ProductsPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [productToDelete, setProductToDelete] = useState<Product | null>(null)
 
-  const loadData = () => {
+  /** 从 API 加载产品和分类数据 */
+  const loadData = async () => {
     try {
-      const productsData = getProducts()
-      const categoriesData = getCategories()
-      setProducts(productsData)
+      setLoading(true)
+      const [productsRes, categoriesData] = await Promise.all([
+        apiClient.get<ProductsResponse>('/api/products?all=true&limit=999'),
+        apiClient.get<Category[]>('/api/categories'),
+      ])
+      setProducts(productsRes.products)
       setCategories(categoriesData)
     } catch (error) {
       console.error('Error loading products:', error)
@@ -66,13 +75,9 @@ export default function ProductsPage() {
 
   useEffect(() => {
     loadData()
-
-    const handleStorage = () => loadData()
-    window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
   }, [])
 
-  // Filter products
+  // Filter products (客户端过滤)
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = !selectedCategory || product.categoryId === selectedCategory
@@ -87,17 +92,29 @@ export default function ProductsPage() {
     currentPage * ITEMS_PER_PAGE
   )
 
-  const handleDelete = () => {
+  /** 删除产品（调用 API） */
+  const handleDelete = async () => {
     if (!productToDelete) return
-    deleteProduct(productToDelete.id)
-    setDeleteModalOpen(false)
-    setProductToDelete(null)
-    loadData()
+    try {
+      await apiClient.delete(`/api/products/${productToDelete.slug}`)
+      setDeleteModalOpen(false)
+      setProductToDelete(null)
+      await loadData()
+    } catch (error) {
+      console.error('Error deleting product:', error)
+    }
   }
 
-  const handleToggleFeatured = (product: Product) => {
-    updateProduct(product.id, { featured: !product.featured })
-    loadData()
+  /** 切换推荐状态（调用 API） */
+  const handleToggleFeatured = async (product: Product) => {
+    try {
+      await apiClient.put<Product>(`/api/products/${product.slug}`, {
+        featured: !product.featured,
+      })
+      await loadData()
+    } catch (error) {
+      console.error('Error toggling featured:', error)
+    }
   }
 
   const getStatusBadge = (status: Product['status']) => {
@@ -280,11 +297,11 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <p className="text-sm font-medium text-stone-900">
-                        {formatPrice(product.price)}
+                        {formatPrice(Number(product.price))}
                       </p>
                       {product.originalPrice && (
                         <p className="text-xs text-stone-400 line-through">
-                          {formatPrice(product.originalPrice)}
+                          {formatPrice(Number(product.originalPrice))}
                         </p>
                       )}
                     </td>

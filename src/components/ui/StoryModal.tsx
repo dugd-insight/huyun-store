@@ -7,10 +7,10 @@ import { X } from 'lucide-react'
 interface StoryData {
   id: string
   title: string
-  image: string
+  image: string | null
   content: string
-  excerpt?: string
-  author?: string
+  excerpt?: string | null
+  author?: string | null
 }
 
 interface StoryModalProps {
@@ -58,7 +58,7 @@ export function StoryModal({ story, isOpen, onClose }: StoryModalProps) {
         {/* Story Image */}
         <div className="relative aspect-[16/9] w-full">
           <Image
-            src={story.image}
+            src={story.image || '/images/story-placeholder.jpg'}
             alt={story.title}
             fill
             className="object-cover"

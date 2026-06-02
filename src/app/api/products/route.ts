@@ -8,11 +8,15 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const featured = searchParams.get('featured')
     const search = searchParams.get('search')
+    const status = searchParams.get('status')
+    const all = searchParams.get('all')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '12')
 
-    const where: any = {
-      status: 'ACTIVE',
+    // 默认只返回上架商品；当 all=true 时返回所有状态（供管理员使用）
+    const where: any = {}
+    if (all !== 'true') {
+      where.status = 'ACTIVE'
     }
 
     if (category) {
@@ -23,6 +27,10 @@ export async function GET(request: NextRequest) {
 
     if (featured === 'true') {
       where.featured = true
+    }
+
+    if (status && all === 'true') {
+      where.status = status
     }
 
     if (search) {

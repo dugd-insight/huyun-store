@@ -9,7 +9,7 @@ import { NextResponse } from 'next/server'
  * @returns null 表示授权通过；NextResponse 表示未授权（应直接返回该响应）
  */
 export async function requireAdmin(): Promise<NextResponse | null> {
-  const session = await getServerSession(authOptions)
+  const session = (await getServerSession(authOptions as any)) as any
 
   if (!session?.user || session.user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

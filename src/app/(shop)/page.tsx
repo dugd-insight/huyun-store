@@ -29,10 +29,16 @@ async function getFeaturedProducts() {
 }
 
 async function getLatestStories() {
-  return prisma.story.findMany({
+  const stories = await prisma.story.findMany({
     orderBy: { publishedAt: 'desc' },
     take: 5,
   })
+
+  // 确保 image 字段不为 null（给 HomeClient 组件）
+  return stories.map((s) => ({
+    ...s,
+    image: s.image || '/images/story-placeholder.jpg',
+  }))
 }
 
 async function getCategories() {
