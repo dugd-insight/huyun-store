@@ -98,7 +98,7 @@ NEXTAUTH_URL="http://localhost:${APP_PORT}"
 # STRIPE_SECRET_KEY=""
 EOF
 
-# 数据库迁移
+# 数据库迁移和生成
 npx prisma migrate deploy
 npx prisma generate
 

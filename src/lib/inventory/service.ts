@@ -1,12 +1,14 @@
 // Inventory Management Service
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
-import { InventoryLogType, Prisma } from '@prisma/client'
+// Inventory log types (matching Prisma enum)
+type InventoryLogType = 'STOCK_IN' | 'STOCK_OUT' | 'ADJUSTMENT' | 'SALE' | 'RETURN' | 'RESTOCK'
 
 export interface StockAdjustmentParams {
   productId: string
   quantity: number
-  type: InventoryLogType
+  type: InventoryLogType | string
   reason?: string
   orderId?: string
   userId?: string
@@ -237,7 +239,7 @@ export async function getInventoryLogs(
   options?: {
     limit?: number
     offset?: number
-    types?: InventoryLogType[]
+    types?: string[]
     startDate?: Date
     endDate?: Date
   }

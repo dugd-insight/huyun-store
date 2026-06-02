@@ -1,8 +1,10 @@
 // Stock Adjustment API Route
 import { NextRequest, NextResponse } from 'next/server'
 import { adjustStock, validateStock } from '@/lib/inventory/service'
-import { InventoryLogType } from '@prisma/client'
 import { getServerSession } from 'next-auth'
+
+// Valid adjustment types
+const VALID_ADJUSTMENT_TYPES = ['STOCK_IN', 'STOCK_OUT', 'ADJUSTMENT', 'SALE', 'RETURN', 'RESTOCK']
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate adjustment type
-    if (!Object.values(InventoryLogType).includes(type as InventoryLogType)) {
+    if (!VALID_ADJUSTMENT_TYPES.includes(type as string)) {
       return NextResponse.json(
         { error: 'Invalid adjustment type' },
         { status: 400 }
@@ -37,7 +39,7 @@ export async function POST(request: NextRequest) {
     const result = await adjustStock({
       productId,
       quantity: parseInt(quantity),
-      type: type as InventoryLogType,
+      type: type as string,
       reason,
       userId: session.user.id,
     })
